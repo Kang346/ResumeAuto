@@ -28,7 +28,15 @@ git clone <this-repo>
 cd ResumeAuto
 pip install -r requirements.txt
 
-# 2. Import your existing resume (PDF or DOCX) — populates user_data/ +
+# 2. (Optional) Verify your install — produces a deterministic 1-page PDF
+#    from the bundled sample JD, no Claude Code or user_data/ needed:
+python pipeline/run_pipeline.py --demo
+#    Look for output/Demo_Distributed_Systems_Engineer_<date>.pdf.
+#    The tailoring is pre-computed (see examples/sample_jd.md and
+#    examples/sample_tailored.json) — for real LLM-driven tailoring on
+#    your own JDs, continue to step 3.
+
+# 3. Import your existing resume (PDF or DOCX) — populates user_data/ +
 #    templates/example.tex in one shot. Open Claude Code in the project
 #    directory and ask:
 #       "import my resume from ~/Downloads/my_resume.pdf"
@@ -38,13 +46,13 @@ pip install -r requirements.txt
 #       cp examples/project_library.example.json user_data/project_library.json
 #     then edit both files and templates/example.tex by hand.)
 
-# 3. Start the local server (the Chrome extension talks to it)
+# 4. Start the local server (the Chrome extension talks to it)
 python server/serve.py
 
-# 4. In a second terminal, load the Chrome extension:
+# 5. In a second terminal, load the Chrome extension:
 #    chrome://extensions → Developer mode → Load unpacked → select ./extension
 
-# 5. Open Claude Code in the project directory. It auto-loads CLAUDE.md and
+# 6. Open Claude Code in the project directory. It auto-loads CLAUDE.md and
 #    is ready to orchestrate. Try:
 #       "tailor my resume for this job: <paste JD>"
 ```

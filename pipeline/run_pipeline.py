@@ -5,10 +5,14 @@ Resume compile pipeline — accepts LLM-tailored JSON, produces a 1-page PDF.
 Usage:
     python pipeline/run_pipeline.py --company "Disney" --title "SWE I" < response.json
     python pipeline/run_pipeline.py --company "Disney" --title "SWE I" --json-file response.json
+    python pipeline/run_pipeline.py --demo
 
 Reads the LLM JSON (with selected_projects, projects_latex, skills_latex, reasoning),
 injects into example.tex template, compiles with pdflatex, auto-shrinks if >1 page,
 and outputs a result JSON to stdout.
+
+The --demo flag runs a deterministic playback against the bundled sample JD —
+no stdin, no LLM call, no user_data/. Useful as a post-install smoke test.
 
 Exit codes:
     0 = success (1-page PDF generated)
@@ -137,17 +141,33 @@ def sanitize_filename(s: str) -> str:
 
 def main():
     parser = argparse.ArgumentParser(description="Compile tailored resume PDF")
-    parser.add_argument("--company", required=True, help="Company name")
-    parser.add_argument("--title", required=True, help="Job title")
+    parser.add_argument("--company", help="Company name")
+    parser.add_argument("--title", help="Job title")
     parser.add_argument("--json-file", help="Path to JSON file (default: read from stdin)")
+    parser.add_argument(
+        "--demo",
+        action="store_true",
+        help="Run a deterministic demo with the bundled sample JD and tailored "
+             "response. Skips stdin / --json-file / --company / --title.",
+    )
     args = parser.parse_args()
 
-    # Read LLM JSON
-    if args.json_file:
-        with open(args.json_file, "r", encoding="utf-8") as f:
+    if args.demo:
+        if args.company or args.title or args.json_file:
+            parser.error(
+                "--demo is mutually exclusive with --company / --title / --json-file"
+            )
+        demo_path = BASE_DIR / "examples" / "sample_tailored.json"
+        with open(demo_path, "r", encoding="utf-8") as f:
             raw = f.read()
     else:
-        raw = sys.stdin.read()
+        if not args.company or not args.title:
+            parser.error("--company and --title are required (or use --demo)")
+        if args.json_file:
+            with open(args.json_file, "r", encoding="utf-8") as f:
+                raw = f.read()
+        else:
+            raw = sys.stdin.read()
 
     # Strip markdown fences if present
     raw = raw.strip()
@@ -165,6 +185,10 @@ def main():
     skills_latex = data.get("skills_latex", "")
     selected = data.get("selected_projects", [])
     reasoning = data.get("reasoning", "")
+
+    if args.demo:
+        args.company = data.get("company", "Demo")
+        args.title = data.get("title", "Demo")
 
     if not projects_latex or not skills_latex:
         result = {"success": False, "error": "Missing projects_latex or skills_latex in JSON"}
