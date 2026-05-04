@@ -1,0 +1,4 @@
+{
+  "_comment": "After loading this extension via chrome://extensions (Developer mode → Load unpacked), Chrome assigns it a unique ID. Copy that ID here so external bridges can target it.",
+  "extension_id": ""
+}

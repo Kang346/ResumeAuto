@@ -1,0 +1,82 @@
+{
+    "meta": {
+        "_instructions": "Copy this file to user_data/project_library.json, then edit the projects to be your own. The agent picks 2 projects per job based on tag overlap with the JD, so put real projects with real tags here. Keep at least 3-5 projects so the agent has selection room. Bullets contain LaTeX formatting (\\textbf{...} for emphasis), since the output gets injected into example.tex directly.",
+        "version": "1.0",
+        "description": "Project library for the resume tailoring agent.",
+        "bold_convention": "Bold the opening action phrase (verb + object), key technical terms that match common JD keywords, and quantitative metrics."
+    },
+    "projects": [
+        {
+            "id": "task-flow",
+            "name": "TaskFlow -- Personal Task Management Web App",
+            "role": "Independent Project",
+            "location": "Remote",
+            "date": "Mar. 2024 -- Jun. 2024",
+            "tags": [
+                "web", "fullstack", "react", "nextjs", "typescript",
+                "postgres", "prisma", "realtime", "crdt", "websockets",
+                "service-worker", "offline", "performance"
+            ],
+            "summary": "Full-stack task manager with real-time multi-user collaboration via CRDTs and offline-first sync.",
+            "bullets": [
+                "\\textbf{Architected a full-stack task manager} with \\textbf{Next.js, Postgres, and Prisma}; designed a normalized schema supporting nested tasks, recurring schedules, and offline sync via \\textbf{IndexedDB} and a service worker",
+                "\\textbf{Built a real-time collaboration layer} using \\textbf{CRDTs and websockets}; enabled multiple users to edit the same task list with \\textbf{sub-100ms} conflict resolution and live presence indicators",
+                "\\textbf{Deployed on Vercel} with edge functions; achieved a \\textbf{95+ Lighthouse score} across all categories and a \\textbf{1.2s Time-to-Interactive} on 4G connections"
+            ]
+        },
+        {
+            "id": "chatbot-framework",
+            "name": "ChatBot Framework -- Open-Source LLM Wrapper Library",
+            "role": "Open-Source Maintainer",
+            "location": "Remote",
+            "date": "Sep. 2023 -- Dec. 2023",
+            "tags": [
+                "llm", "ai", "python", "library", "open-source",
+                "openai", "anthropic", "llama", "rag", "agents",
+                "streaming", "tool-use", "json-schema"
+            ],
+            "summary": "Python library wrapping multiple LLM providers behind a unified streaming interface, with tool-use abstractions.",
+            "bullets": [
+                "\\textbf{Designed and published a Python library} wrapping multiple LLM providers (\\textbf{OpenAI, Anthropic, local Llama}) behind a unified streaming interface; reached \\textbf{800+ GitHub stars} within 3 months of release",
+                "\\textbf{Implemented a tool-use abstraction} with automatic JSON-schema validation, retry-on-malformed-output, and pluggable backends; enabled provider swap with a one-line config change",
+                "\\textbf{Wrote comprehensive docs and 40+ examples} covering RAG, agents, structured output, and streaming; attracted 12 external contributors and merged 30+ community PRs"
+            ]
+        },
+        {
+            "id": "dist-cache",
+            "name": "DistCache -- In-Memory Distributed Cache",
+            "role": "Independent Project",
+            "location": "Remote",
+            "date": "Oct. 2023 -- Feb. 2024",
+            "tags": [
+                "systems", "distributed", "cpp", "networking",
+                "performance", "consistent-hashing", "raft", "lock-free",
+                "benchmarking", "low-latency"
+            ],
+            "summary": "Redis-compatible in-memory cache with consistent hashing and Raft-based replication, written in modern C++.",
+            "bullets": [
+                "\\textbf{Built a Redis-compatible distributed cache} in \\textbf{C++20} with consistent-hashing partitioning across nodes; benchmarked at \\textbf{1.2M ops/s} on a 3-node cluster with sub-millisecond p99 read latency",
+                "\\textbf{Implemented Raft-based replication} for leader election and log-replicated writes across replicas; survived chaos-tested rolling restarts and network partitions with no data loss",
+                "\\textbf{Optimized the hot read path} using lock-free hash maps, custom slab allocators, and zero-copy network buffers; reduced p50 GET latency from \\textbf{120us to 38us}"
+            ]
+        },
+        {
+            "id": "data-pipeline-cli",
+            "name": "DataFlow -- Configurable ETL Pipeline CLI",
+            "role": "Independent Project",
+            "location": "Remote",
+            "date": "Apr. 2024 -- Jul. 2024",
+            "tags": [
+                "data", "etl", "python", "cli", "duckdb",
+                "pandas", "yaml", "data-validation", "sql",
+                "schema-evolution", "observability"
+            ],
+            "summary": "YAML-configured ETL pipeline CLI for ad-hoc data work over CSV/Parquet/Postgres sources, built on DuckDB.",
+            "bullets": [
+                "\\textbf{Designed a YAML-configured ETL CLI} on top of \\textbf{DuckDB}; supported CSV, Parquet, and Postgres sources with declarative joins, filters, and aggregations executed against an in-memory columnar engine",
+                "\\textbf{Built a typed schema-validation layer} with Pydantic that catches type mismatches and missing columns before pipeline execution; reduced data-quality incidents by \\textbf{6x} on a real production workload",
+                "\\textbf{Added structured run logs} with per-step row counts, runtime, and memory usage written as JSON to S3; integrated with Datadog dashboards for trend monitoring across ~80 daily pipeline runs"
+            ]
+        }
+    ]
+}

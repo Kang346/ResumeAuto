@@ -1,0 +1,97 @@
+{
+    "_instructions": "Copy this file to user_data/personal_info.json, then replace every value with your own. Empty strings are OK for optional fields (gender / race / etc.). The local server reads this file at startup; restart it after editing.",
+
+    "name": {
+        "first": "Alex",
+        "last": "Doe"
+    },
+    "email": "alex.doe@example.com",
+    "phone": "5551234567",
+    "location": {
+        "line1": "REPLACE_WITH_YOUR_STREET_ADDRESS",
+        "line2": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94102",
+        "country": "United States"
+    },
+    "linkedin": "https://linkedin.com/in/alex-doe-demo",
+    "github": "https://github.com/alex-doe-demo",
+    "website": "",
+
+    "education": [
+        {
+            "degree": "Master of Science",
+            "major": "Computer Science",
+            "school": "State University",
+            "location": "Anytown, USA",
+            "start": "2023-09",
+            "end": "2024-12",
+            "gpa": "3.9"
+        },
+        {
+            "degree": "Bachelor of Science",
+            "major": "Computer Science",
+            "school": "Example College",
+            "location": "Anytown, USA",
+            "start": "2019-09",
+            "end": "2023-07",
+            "gpa": "3.8"
+        }
+    ],
+
+    "work_experience": [
+        {
+            "title": "Software Engineer",
+            "company": "ExampleCorp",
+            "location": "San Francisco, CA",
+            "start": "2025-01",
+            "end": null,
+            "current": true,
+            "bullets": [
+                "Built a high-throughput event ingestion service in Go handling ~50K req/s; reduced p99 latency from 220ms to 45ms via batched writes, connection pooling, and a sharded in-memory buffer with backpressure",
+                "Designed and shipped an internal feature-flag SDK adopted by 12 services; implemented gradual rollout, percentage targeting, and a Redis-backed audit log enabling sub-second flag propagation across regions",
+                "Led migration of a legacy monolith auth flow to an OAuth2 + JWT microservice; coordinated with 4 teams, wrote backwards-compatible shims, and rolled out to 100% of users with zero downtime"
+            ]
+        },
+        {
+            "title": "Software Engineer Intern",
+            "company": "DemoLabs",
+            "location": "Remote",
+            "start": "2024-06",
+            "end": "2024-08",
+            "current": false,
+            "bullets": [
+                "Prototyped a retrieval-augmented chatbot over internal documentation using LangChain, FAISS, and OpenAI embeddings; achieved 85% answer accuracy on a 200-question eval set, beating keyword-search baseline by 32%",
+                "Optimized vector index ingestion by parallelizing embedding calls and adding incremental updates; reduced full reindex time from 4 hours to 35 minutes on a 200K-document corpus",
+                "Wrote end-to-end tests covering 90% of critical paths; integrated with GitHub Actions to gate deploys, catching 6 regressions before they reached staging"
+            ]
+        },
+        {
+            "title": "Software Engineer Intern",
+            "company": "SampleSoft",
+            "location": "Anytown, USA",
+            "start": "2023-06",
+            "end": "2023-08",
+            "current": false,
+            "bullets": [
+                "Implemented a distributed task scheduler in Python with Celery and RabbitMQ; supported priority queues, retries with exponential backoff, and dead-letter routing for ~1.2M daily jobs",
+                "Refactored a 5K-line legacy data-export module into a typed, testable streaming pipeline; raised test coverage from 12% to 78% and cut wall-clock export time by 40%",
+                "Built an internal admin dashboard with React, TypeScript, and Tailwind; reduced manual ops time for the support team by ~6 hours per week"
+            ]
+        }
+    ],
+
+    "skills_list": [
+        "Python", "JavaScript", "TypeScript", "Go", "SQL",
+        "React", "Next.js", "Django", "FastAPI", "PostgreSQL",
+        "Docker", "AWS", "Git", "Linux"
+    ],
+
+    "work_authorization": "Authorized to work in the US",
+    "requires_sponsorship": false,
+    "gender": "",
+    "race_ethnicity": "",
+    "veteran_status": "No",
+    "disability_status": "No"
+}

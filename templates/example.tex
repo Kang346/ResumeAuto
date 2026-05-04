@@ -1,0 +1,175 @@
+%-------------------------
+% Resume Template — Example Persona (Alex Doe)
+% Based on Jake's Resume style (ATS-friendly, single-page)
+%
+% This is a SAMPLE resume meant to demonstrate the pipeline.
+% Replace the heading, education, and professional experience sections
+% with your own data, then keep the PROJECTS and SKILLS placeholder
+% markers so the tailoring pipeline can inject content.
+%-------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{tabularx}
+% fontawesome5 removed for compatibility
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-0.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Section formatting
+\titleformat{\section}{
+  \vspace{-6pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule\vspace{-5pt}]
+
+%-------------------------
+% Custom commands
+%-------------------------
+\newcommand{\resumeItem}[1]{
+  \item\small{#1 \vspace{-2pt}}
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%
+%-------------------------------------------
+
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+  \textbf{\Huge \scshape Alex Doe} \\ \vspace{1pt}
+  \small
+  San Francisco, CA, USA $|$
+  \href{tel:+15551234567}{+1 (555) 123-4567} $|$
+  \href{mailto:alex.doe@example.com}{alex.doe@example.com} $|$
+  \href{https://linkedin.com/in/alex-doe-demo}{linkedin.com/in/alex-doe-demo} $|$
+  \href{https://github.com/alex-doe-demo}{github.com/alex-doe-demo}
+\end{center}
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {State University}{Anytown, USA}
+      {M.S. in Computer Science}{Sep. 2023 -- Dec. 2024}
+    \resumeSubheading
+      {Example College}{Anytown, USA}
+      {B.S. in Computer Science}{Sep. 2019 -- Jul. 2023}
+  \resumeSubHeadingListEnd
+
+%-----------PROFESSIONAL EXPERIENCE-----------
+\section{Professional Experience}
+  \resumeSubHeadingListStart
+
+    \resumeSubheading
+      {Software Engineer}{Jan. 2025 -- Present}
+      {ExampleCorp}{San Francisco, CA}
+      \resumeItemListStart
+        \resumeItem{Built a high-throughput event ingestion service in Go handling $\sim$50K req/s; reduced p99 latency from 220ms to 45ms by introducing batched writes, connection pooling, and a sharded in-memory buffer with backpressure}
+        \resumeItem{Designed and shipped an internal feature-flag SDK adopted by 12 services; implemented gradual rollout, percentage targeting, and a Redis-backed audit log enabling sub-second flag propagation across regions}
+        \resumeItem{Led migration of a legacy monolith auth flow to an OAuth2 + JWT microservice; coordinated with 4 teams, wrote backwards-compatible shims, and rolled out to 100\% of users with zero downtime}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Software Engineer Intern}{Jun. 2024 -- Aug. 2024}
+      {DemoLabs}{Remote}
+      \resumeItemListStart
+        \resumeItem{Prototyped a retrieval-augmented chatbot over internal documentation using LangChain, FAISS, and OpenAI embeddings; achieved 85\% answer accuracy on a 200-question eval set, beating keyword-search baseline by 32\%}
+        \resumeItem{Optimized vector index ingestion by parallelizing embedding calls and adding incremental updates; reduced full reindex time from 4 hours to 35 minutes on a 200K-document corpus}
+        \resumeItem{Wrote end-to-end tests covering 90\% of critical paths; integrated with GitHub Actions to gate deploys, catching 6 regressions before they reached staging}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Software Engineer Intern}{Jun. 2023 -- Aug. 2023}
+      {SampleSoft}{Anytown, USA}
+      \resumeItemListStart
+        \resumeItem{Implemented a distributed task scheduler in Python with Celery and RabbitMQ; supported priority queues, retries with exponential backoff, and dead-letter routing for $\sim$1.2M daily jobs}
+        \resumeItem{Refactored a 5K-line legacy data-export module into a typed, testable streaming pipeline; raised test coverage from 12\% to 78\% and cut wall-clock export time by 40\%}
+        \resumeItem{Built an internal admin dashboard with React, TypeScript, and Tailwind; reduced manual ops time for the support team by $\sim$6 hours per week}
+      \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+
+%-----------PROJECTS-----------
+\section{Projects}
+  \resumeSubHeadingListStart
+%%% PROJECTS_PLACEHOLDER_START %%%
+
+    \resumeProjectHeading
+      {TaskFlow -- Personal Task Management Web App}{Mar. 2024 -- Jun. 2024}
+      \resumeItemListStart
+        \resumeItem{Architected a full-stack task manager with Next.js, Postgres, and Prisma; designed a normalized schema supporting nested tasks, recurring schedules, and offline sync via IndexedDB and a service worker}
+        \resumeItem{Built a real-time collaboration layer using CRDTs and websockets; enabled multiple users to edit the same task list with sub-100ms conflict resolution and live presence indicators}
+        \resumeItem{Deployed on Vercel with edge functions; achieved a 95+ Lighthouse score across all categories and a 1.2s Time-to-Interactive on 4G connections}
+      \resumeItemListEnd
+
+    \resumeProjectHeading
+      {ChatBot Framework -- Open-Source LLM Wrapper Library}{Sep. 2023 -- Dec. 2023}
+      \resumeItemListStart
+        \resumeItem{Designed and published a Python library wrapping multiple LLM providers (OpenAI, Anthropic, local Llama) behind a unified streaming interface; reached 800+ GitHub stars within 3 months of release}
+        \resumeItem{Implemented a tool-use abstraction with automatic JSON-schema validation, retry-on-malformed-output, and pluggable backends; enabled provider swap with a one-line config change}
+        \resumeItem{Wrote comprehensive docs and 40+ examples covering RAG, agents, structured output, and streaming; attracted 12 external contributors and merged 30+ community PRs}
+      \resumeItemListEnd
+
+%%% PROJECTS_PLACEHOLDER_END %%%
+  \resumeSubHeadingListEnd
+
+%-----------SKILLS-----------
+\section{Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+%%% SKILLS_PLACEHOLDER_START %%%
+     \textbf{Languages}{: Python, JavaScript, TypeScript, Go, SQL, HTML/CSS} \\
+     \textbf{Frameworks \& Tools}{: React, Next.js, Django, FastAPI, PostgreSQL, Docker, AWS, Git, Linux}
+%%% SKILLS_PLACEHOLDER_END %%%
+    }}
+ \end{itemize}
+
+%-------------------------------------------
+\end{document}

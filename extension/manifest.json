@@ -1,0 +1,134 @@
+{
+  "manifest_version": 3,
+  "name": "AutoResume Job Filler",
+  "version": "1.0.0",
+  "description": "Auto-fills job application forms and injects resume PDFs",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs",
+    "scripting",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "http://localhost:8765/*",
+    "*://*.myworkdayjobs.com/*",
+    "*://boards.greenhouse.io/*",
+    "*://job-boards.greenhouse.io/*",
+    "*://*.lever.co/*",
+    "*://jobs.ashbyhq.com/*",
+    "https://cursor.com/*",
+    "https://*.cursor.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.myworkdayjobs.com/*"
+      ],
+      "js": [
+        "content/autofill-core.js",
+        "content/file-injector.js",
+        "content/status-badge.js",
+        "content/ats/workday.js",
+        "content/detector.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://boards.greenhouse.io/*",
+        "*://job-boards.greenhouse.io/*"
+      ],
+      "js": [
+        "content/autofill-core.js",
+        "content/file-injector.js",
+        "content/status-badge.js",
+        "content/ats/greenhouse.js",
+        "content/detector.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://jobs.lever.co/*"
+      ],
+      "js": [
+        "content/autofill-core.js",
+        "content/file-injector.js",
+        "content/status-badge.js",
+        "content/ats/lever.js",
+        "content/detector.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://jobs.ashbyhq.com/*"
+      ],
+      "js": [
+        "content/autofill-core.js",
+        "content/file-injector.js",
+        "content/status-badge.js",
+        "content/ats/ashby.js",
+        "content/detector.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "https://cursor.com/*",
+        "https://*.cursor.com/*"
+      ],
+      "js": [
+        "content/autofill-core.js",
+        "content/file-injector.js",
+        "content/status-badge.js",
+        "content/ats/ashby.js",
+        "content/detector.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "externally_connectable": {
+    "matches": [
+      "*://*.myworkdayjobs.com/*",
+      "*://boards.greenhouse.io/*",
+      "*://job-boards.greenhouse.io/*",
+      "*://*.greenhouse.io/*",
+      "*://jobs.lever.co/*",
+      "*://*.lever.co/*",
+      "*://jobs.ashbyhq.com/*",
+      "*://*.ashbyhq.com/*",
+      "https://cursor.com/*",
+      "https://*.cursor.com/*",
+      "https://elevenlabs.io/*",
+      "https://*.elevenlabs.io/*",
+      "https://openai.com/*",
+      "https://*.openai.com/*",
+      "https://*.modal.com/*",
+      "https://anthropic.com/*",
+      "https://*.anthropic.com/*"
+    ]
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
