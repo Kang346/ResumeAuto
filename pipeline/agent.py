@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Resume Tailoring Agent — Phase 1
+Resume Tailoring Agent — Phase 2
 Reads Backlog jobs from Notion, tailors resume, generates PDF.
 Designed to be called by Claude Code or run standalone.
 
@@ -238,10 +238,10 @@ def process_single_job(page_id: str, company: str, job_title: str,
         result["reason"] = "Already applied"
         return result
 
-    # ── Check if PDF already generated (Phase 1 done, awaiting Phase 2) ──
+    # ── Check if PDF already generated (Phase 2 done, awaiting Phase 3) ──
     if agent_note and agent_note.startswith("📄"):
         result["status"] = "already_processed"
-        result["reason"] = "PDF already generated, ready for Phase 2 submission"
+        result["reason"] = "PDF already generated, ready for Phase 3 submission"
         result["agent_note"] = agent_note  # preserve as-is, do not overwrite
         return result
 
@@ -390,7 +390,7 @@ def finish_job(result: dict, llm_response_text: str, template: str) -> dict:
 
 # ── Entry Point ────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    print("Resume Tailoring Agent — Phase 1")
+    print("Resume Tailoring Agent — Phase 2")
     print("This script provides helper functions for Claude Code to orchestrate.")
     print("")
     print("Available functions:")

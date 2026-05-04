@@ -1,4 +1,4 @@
-# Phase 2 — Auto-Apply
+# Phase 3 — Auto-Apply
 
 For each job-source entry where `Agent Note` starts with `📄`: open the apply URL, let the Chrome extension auto-fill known fields, fill the rest yourself, **stop before final submit**, ask the user to confirm, then mark as `✅ Applied`.
 
@@ -15,7 +15,7 @@ This document is for any agent with browser control (Claude Code with Chrome MCP
 
 1. [user_data/personal_info.json](../user_data/personal_info.json) — all personal data; also exposed at `http://localhost:8765/personal-info`.
 2. **Agent Note** on the job-source entry — contains the PDF filename, e.g. `📄 PDF Ready | Projects: x, y | PDF: Company_xxx.pdf`.
-3. **Tailored PDF** in `output/` — produced by Phase 1.
+3. **Tailored PDF** in `output/` — produced by Phase 2.
 4. **Chrome extension** loaded — auto-fills known ATS fields and injects PDFs.
 5. [form_rules.md](./form_rules.md) — yes/no defaults, work auth, salary, open-ended answers.
 
@@ -80,7 +80,7 @@ You handle: navigation, unfilled fields, open-ended questions, final review.
 ## Boundaries
 
 - NEVER touch the user's `Note` field (only `Agent Note`).
-- LinkedIn: read-only navigation in Phase 1 to find external apply URLs is fine. In Phase 2, Easy Apply is allowed as a submission path. NEVER message, follow, or take any other LinkedIn action.
+- LinkedIn: read-only navigation in Phase 2 to find external apply URLs is fine. In Phase 3, Easy Apply is allowed as a submission path. NEVER message, follow, or take any other LinkedIn action.
 - If pending unresolved tabs `>= 10`, pause and wait for the user to clear some.
 - For open-ended questions, search the web for company info before writing — see [form_rules.md](./form_rules.md) §3.
 - Process jobs one at a time, waiting for user confirmation before each submission.

@@ -76,7 +76,7 @@ Rules:
 Ask the user only the questions the resume cannot answer:
 
 1. **Work authorization.** Default phrasing: *"F-1 OPT requiring future H-1B sponsorship"*. Default `requires_sponsorship: true`. Ask once; accept their answer.
-2. **Projects fallback.** If Step 2 yielded fewer than 2 projects, ask the user for 2–3 project names + a one-line summary each. Write skeletons (name + summary + empty bullets) so Phase 1 tailoring still has selection room. Do **not** fabricate projects from work-experience bullets.
+2. **Projects fallback.** If Step 2 yielded fewer than 2 projects, ask the user for 2–3 project names + a one-line summary each. Write skeletons (name + summary + empty bullets) so Phase 2 tailoring still has selection room. Do **not** fabricate projects from work-experience bullets.
 3. **Street address & ZIP.** If `location.line1` (street) and `location.zip` are missing — they almost always are — ask. Many ATS forms reject submissions without them.
 
 Do **not** ask about: gender, race/ethnicity, veteran status, disability status. Those EEO fields stay blank by design.
@@ -105,7 +105,7 @@ Write `user_data/personal_info.json` to match the schema in `examples/personal_i
 Write `user_data/project_library.json` to match `examples/project_library.example.json`. For each project:
 
 - `id` — slug derived from name: lowercase, alphanumeric, dashes (e.g. `"task-flow"`).
-- `tags` — invent from bullet content: languages, frameworks, and domain keywords mentioned (e.g. `["python", "fastapi", "postgres", "ml"]`). Aim for 6–12 tags so the Phase 1 tag-overlap scorer has signal.
+- `tags` — invent from bullet content: languages, frameworks, and domain keywords mentioned (e.g. `["python", "fastapi", "postgres", "ml"]`). Aim for 6–12 tags so the Phase 2 tag-overlap scorer has signal.
 - `summary` — one sentence (≤ 25 words) capturing what the project is.
 - `bullets` — convert each plain-text bullet to LaTeX following the bold convention from [prompt_rules.md](./prompt_rules.md):
   - Bold the opening action phrase (verb + object): `\textbf{Architected a 6-stage pipeline}`
@@ -140,7 +140,7 @@ The template ships with marker pairs around the editable sections. Use them as s
    ```
    Wrap the whole list in `\resumeSubHeadingListStart` ... `\resumeSubHeadingListEnd`. Keep work-experience bullets as plain prose with LaTeX escapes only — **do not** add `\textbf{}` here. The header / Education / Experience sections are FROZEN by design (per [prompt_rules.md](./prompt_rules.md)) and bolding bullets in those sections clutters the static parts of the resume.
 
-5. **Do not touch** the Projects or Skills sections. Their `%%% PROJECTS_PLACEHOLDER_START/END %%%` and `%%% SKILLS_PLACEHOLDER_START/END %%%` markers must remain intact for [pipeline/run_pipeline.py](../pipeline/run_pipeline.py) to inject tailored content on every Phase 1 run.
+5. **Do not touch** the Projects or Skills sections. Their `%%% PROJECTS_PLACEHOLDER_START/END %%%` and `%%% SKILLS_PLACEHOLDER_START/END %%%` markers must remain intact for [pipeline/run_pipeline.py](../pipeline/run_pipeline.py) to inject tailored content on every Phase 2 run.
 
 ---
 
@@ -170,7 +170,7 @@ Print a concise summary:
 - ⬜ Left blank: gender, race_ethnicity, veteran_status, disability_status (EEO — never auto-filled).
 - 📄 PDF: `work/example.pdf` compiled successfully (or the failure mode if not).
 - ➡️ Next steps:
-  - Review `user_data/project_library.json` — refine `tags` and `bullets` so the Phase 1 tailoring agent has good selection material.
+  - Review `user_data/project_library.json` — refine `tags` and `bullets` so the Phase 2 tailoring agent has good selection material.
   - If any project has empty bullets (Step 3 fallback), fill them in.
   - Run a smoke test: `python pipeline/run_pipeline.py --company "Test" --title "Test" < some_response.json` to confirm injection still works end-to-end.
 

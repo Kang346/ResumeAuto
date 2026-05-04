@@ -23,7 +23,7 @@ this tool produces for each job, before you install LaTeX or anything else.
 
 - Python 3.9+
 - A LaTeX distribution — [MiKTeX](https://miktex.org/) on Windows, [TeX Live](https://www.tug.org/texlive/) on Linux/macOS
-- Chrome (for the Phase 2 extension)
+- Chrome (for the Phase 3 extension)
 - [Claude Code](https://docs.claude.com/en/docs/claude-code) installed
 - *(Optional)* Notion + an integration token, if you want to use Notion as the job source
 
@@ -77,10 +77,10 @@ ResumeAuto/
 │   └── example.tex     # LaTeX template with %%% PLACEHOLDER %%% markers
 ├── prompts/            # LLM instructions and agent prompts
 │   ├── prompt_rules.md   # Rules for the resume-tailoring step
-│   ├── form_rules.md     # Rules for Phase 2 form filling
-│   └── job_collection.md # Prompt for the Phase 0 job-discovery agent
+│   ├── form_rules.md     # Rules for Phase 3 form filling
+│   └── job_collection.md # Prompt for the Phase 1 job-discovery agent
 ├── server/             # Local HTTP bridge between agent and Chrome extension
-├── extension/          # Chrome extension (Phase 2 auto-fill)
+├── extension/          # Chrome extension (Phase 3 auto-fill)
 ├── examples/           # Reference templates — copy from here into user_data/
 └── user_data/          # YOUR data — gitignored, never committed
 ```
@@ -91,7 +91,7 @@ ResumeAuto/
 
 Two files you maintain:
 
-- **`user_data/personal_info.json`** — name, contact info, education, work history, work-authorization defaults. Read by the local server and used for Phase 2 form filling.
+- **`user_data/personal_info.json`** — name, contact info, education, work history, work-authorization defaults. Read by the local server and used for Phase 3 form filling.
 - **`user_data/project_library.json`** — your projects with `tags`, a one-line `summary`, and LaTeX-formatted `bullets`. The agent picks 2 projects per job based on tag overlap with the JD. Keep at least 3–5 projects so there's selection room.
 
 Easiest path: run the resume import flow (Quickstart step 2). It populates both files and updates the template heading / Education / Experience sections from your existing PDF or DOCX.
@@ -134,7 +134,7 @@ If you don't want Notion, the easiest no-database alternative is a `user_data/jo
 
 - LaTeX is a heavy install. MiKTeX and TeX Live are multi-GB.
 - The Chrome extension has dedicated adapters for Workday, Greenhouse, Lever, and Ashby. Other ATSes fall back to a best-effort generic fill.
-- Phase 2 always stops before final submit; you click Submit yourself after reviewing.
+- Phase 3 always stops before final submit; you click Submit yourself after reviewing.
 
 ## License
 

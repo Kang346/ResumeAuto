@@ -1,6 +1,6 @@
-# Phase 1.5 — Drain the Question Queue
+# Phase 2.5 — Drain the Question Queue
 
-While filling a Phase 2 application in the browser, the user can right-click a "Why this company?" / "Tell us about yourself" / cover-letter prompt and pick **"Ask agent to draft an answer"**. The Chrome extension queues that question to [user_data/pending_questions.json](../user_data/pending_questions.json) (via `POST /queue-question` to the local server).
+While filling a Phase 3 application in the browser, the user can right-click a "Why this company?" / "Tell us about yourself" / cover-letter prompt and pick **"Ask agent to draft an answer"**. The Chrome extension queues that question to [user_data/pending_questions.json](../user_data/pending_questions.json) (via `POST /queue-question` to the local server).
 
 When the user later says any of:
 

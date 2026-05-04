@@ -1,5 +1,5 @@
 {
-  "_instructions": "Pre-baked Phase 1 tailoring response for the bundled sample JD (examples/sample_jd.md). Used by `python pipeline/run_pipeline.py --demo` to produce a deterministic 1-page PDF without any LLM call. Schema matches what run_pipeline.py expects on stdin in the normal flow.",
+  "_instructions": "Pre-baked Phase 2 tailoring response for the bundled sample JD (examples/sample_jd.md). Used by `python pipeline/run_pipeline.py --demo` to produce a deterministic 1-page PDF without any LLM call. Schema matches what run_pipeline.py expects on stdin in the normal flow.",
   "company": "Demo",
   "title": "Distributed Systems Engineer",
   "selected_projects": ["dist-cache", "data-pipeline-cli"],
