@@ -26,24 +26,25 @@ You confirm every submission. The pipeline stops before clicking final Submit.
 # 1. Clone and install Python deps
 git clone <this-repo>
 cd ResumeAuto
-pip install -r server/requirements.txt
+pip install -r requirements.txt
 
-# 2. Seed your user data from the examples
-cp examples/personal_info.example.json   user_data/personal_info.json
-cp examples/project_library.example.json user_data/project_library.json
-# Edit both files to be you.
+# 2. Import your existing resume (PDF or DOCX) — populates user_data/ +
+#    templates/example.tex in one shot. Open Claude Code in the project
+#    directory and ask:
+#       "import my resume from ~/Downloads/my_resume.pdf"
+#    See prompts/resume_import.md for the full flow.
+#    (Or skip the import and copy from examples/ manually:
+#       cp examples/personal_info.example.json   user_data/personal_info.json
+#       cp examples/project_library.example.json user_data/project_library.json
+#     then edit both files and templates/example.tex by hand.)
 
-# 3. Edit templates/example.tex — replace the heading, Education, and
-#    Professional Experience sections with your own. Leave the
-#    %%% PLACEHOLDER %%% markers alone.
-
-# 4. Start the local server (the Chrome extension talks to it)
+# 3. Start the local server (the Chrome extension talks to it)
 python server/serve.py
 
-# 5. In a second terminal, load the Chrome extension:
+# 4. In a second terminal, load the Chrome extension:
 #    chrome://extensions → Developer mode → Load unpacked → select ./extension
 
-# 6. Open Claude Code in the project directory. It auto-loads CLAUDE.md and
+# 5. Open Claude Code in the project directory. It auto-loads CLAUDE.md and
 #    is ready to orchestrate. Try:
 #       "tailor my resume for this job: <paste JD>"
 ```
@@ -78,7 +79,9 @@ Two files you maintain:
 - **`user_data/personal_info.json`** — name, contact info, education, work history, work-authorization defaults. Read by the local server and used for Phase 2 form filling.
 - **`user_data/project_library.json`** — your projects with `tags`, a one-line `summary`, and LaTeX-formatted `bullets`. The agent picks 2 projects per job based on tag overlap with the JD. Keep at least 3–5 projects so there's selection room.
 
-Start by copying from `examples/`, then edit. Both example files have a `_instructions` field at the top with a quick guide.
+Easiest path: run the resume import flow (Quickstart step 2). It populates both files and updates the template heading / Education / Experience sections from your existing PDF or DOCX.
+
+Manual path: copy from `examples/`, then edit. Both example files have a `_instructions` field at the top with a quick guide.
 
 The pipeline's runtime state files (`pending_jobs.json`, `pending_questions.json`, `pending_answers.json`, `autofill_state.json`, `tab_tracker.json`) also live in `user_data/`. The server creates them on first write — you don't need to seed them.
 

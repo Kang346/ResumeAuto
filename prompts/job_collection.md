@@ -6,6 +6,34 @@ You are helping the user collect job postings into a database (default: Notion) 
 
 ---
 
+## Notion database schema (default job source)
+
+Configure these via environment variables (or your config file):
+
+- `NOTION_DB_ID` — your database ID (UUID)
+- `NOTION_DATA_SOURCE` — `collection://<uuid>`
+
+Suggested field schema (use exactly these names, or adapt the prompts to your own):
+
+| Field | Type | Notes |
+|---|---|---|
+| `Company Name` | title | e.g. `"NVIDIA"` — no `, Inc.` suffix |
+| `Job Title` | text | Full title with seniority hint, e.g. `"Software Engineer (New Grad)"` |
+| `Apply Link` | URL | External ATS URL (Greenhouse / Workday / Lever / Ashby / company careers) |
+| `LinkedIn URL` | URL, optional | LinkedIn job URL if discovered there |
+| `Base` | text | Location, e.g. `"San Francisco, CA"`, `"Remote (US)"` |
+| `Salary` | text | e.g. `"$140K-$190K"` or `"Not disclosed"` |
+| `Status` | select: `Backlog` / `Applied` | Default `Backlog`. Only Phase 2 changes to `Applied`. |
+| `Note` | text | **User-only** — the agent must NEVER write here. |
+| `Agent Note` | text | All agent output goes here, with emoji prefix. |
+| `JD Summary` | text | 2–3 sentence summary; full JD lives in the page body. |
+
+The full JD lives in the page **body** (not a property), formatted per the structured-summary template at the end of this file.
+
+To bootstrap the database, ask Claude Code to create it for you the first time using the schema above.
+
+---
+
 ## Candidate profile (CUSTOMIZE — drives filtering)
 
 | Fact                          | Value                                                                                                                                                                                        |
@@ -190,7 +218,7 @@ When the user invokes this prompt, do the following in order:
 
 0. **Process the saved queue first.** Read `user_data/pending_jobs.json`. For each entry:
    - **Classify the URL**:
-     - If host contains `linkedin.com/jobs/` → treat as discovery URL. Navigate it, locate the external Apply link, set `Apply Link` = external URL and `LinkedIn URL` = saved URL. If only Easy Apply is available, leave `Apply Link` blank, set `LinkedIn URL` = saved URL, and tag the eventual PDF with `Apply via: LinkedIn Easy Apply` per [CLAUDE.md](../CLAUDE.md) Phase 1 rules.
+     - If host contains `linkedin.com/jobs/` → treat as discovery URL. Navigate it, locate the external Apply link, set `Apply Link` = external URL and `LinkedIn URL` = saved URL. If only Easy Apply is available, leave `Apply Link` blank, set `LinkedIn URL` = saved URL, and tag the eventual PDF with `Apply via: LinkedIn Easy Apply` per [phase1_tailor.md](./phase1_tailor.md) rules.
      - Otherwise (Greenhouse / Workday / Lever / Ashby / company ATS) → set `Apply Link` = saved URL directly, leave `LinkedIn URL` blank.
    - Open the URL, extract company / job title / JD
    - Run the full Per-job validation checklist (all rules apply: date ≤ 7 days, sponsorship, education, YoE, etc.)
@@ -209,7 +237,7 @@ Process jobs ONE AT A TIME — don't batch-write. After each successful add, mov
 
 ## Boundaries
 
-- **Never apply to a job from this prompt.** This prompt is collection only. Application happens in a separate session via the Phase 1 (PDF generation) + Phase 2 (form fill) flow documented in `CLAUDE.md`.
+- **Never apply to a job from this prompt.** This prompt is collection only. Application happens in a separate session via the Phase 1 (PDF generation) + Phase 2 (form fill) flow documented in [phase1_tailor.md](./phase1_tailor.md) and [phase2_apply.md](./phase2_apply.md).
 - **Never modify existing entries** beyond writing new pages. If you find a duplicate, just skip — do not edit the original.
 - **Don't write to LinkedIn**, send messages, or take any account action on linkedin.com. Read-only navigation for finding external apply links is OK.
 - **Don't fabricate.** If you cannot verify a job is currently open, skip it. Don't guess company names, titles, or links.
