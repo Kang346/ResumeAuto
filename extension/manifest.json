@@ -31,6 +31,7 @@
       "js": [
         "content/autofill-core.js",
         "content/file-injector.js",
+        "shared/icons.js",
         "content/status-badge.js",
         "content/ats/workday.js",
         "content/detector.js"
@@ -46,6 +47,7 @@
       "js": [
         "content/autofill-core.js",
         "content/file-injector.js",
+        "shared/icons.js",
         "content/status-badge.js",
         "content/ats/greenhouse.js",
         "content/detector.js"
@@ -60,6 +62,7 @@
       "js": [
         "content/autofill-core.js",
         "content/file-injector.js",
+        "shared/icons.js",
         "content/status-badge.js",
         "content/ats/lever.js",
         "content/detector.js"
@@ -74,6 +77,7 @@
       "js": [
         "content/autofill-core.js",
         "content/file-injector.js",
+        "shared/icons.js",
         "content/status-badge.js",
         "content/ats/ashby.js",
         "content/detector.js"
@@ -89,6 +93,7 @@
       "js": [
         "content/autofill-core.js",
         "content/file-injector.js",
+        "shared/icons.js",
         "content/status-badge.js",
         "content/ats/ashby.js",
         "content/detector.js"
@@ -118,6 +123,12 @@
       "https://*.anthropic.com/*"
     ]
   },
+  "web_accessible_resources": [
+    {
+      "resources": ["shared/tokens.css", "shared/icons.svg"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {

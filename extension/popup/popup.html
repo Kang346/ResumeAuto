@@ -1,93 +1,61 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
+  <link rel="stylesheet" href="../shared/tokens.css">
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div class="header">
+  <header class="topbar">
     <div class="brand">
-      <span class="brand-mark">AR</span>
-      <h1>AutoResume</h1>
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">AutoResume</span>
     </div>
-    <span id="server-status" class="dot red" title="Server status"></span>
-  </div>
-
-  <div class="card">
-    <div class="row">
-      <span class="row-label">ATS</span>
-      <span id="ats-type" class="row-value muted">—</span>
+    <div class="topbar-actions">
+      <button id="btn-save" class="icon-btn" type="button" aria-label="Save this job" title="Save this job for later">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <use href="../shared/icons.svg#i-bookmark"/>
+        </svg>
+      </button>
+      <span id="server-status" class="server-dot" data-state="checking" role="status" aria-label="Server status: checking"></span>
     </div>
-    <div class="row">
-      <span class="row-label">Fill</span>
-      <span id="fill-status" class="row-value muted">—</span>
+  </header>
+
+  <main class="state-host" id="state-host" aria-live="polite"></main>
+
+  <details class="more" id="more">
+    <summary>
+      <span class="more-label">More options</span>
+      <svg class="icon icon-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <use href="../shared/icons.svg#i-chevron-down"/>
+      </svg>
+    </summary>
+    <div class="more-body">
+      <section class="more-section" id="generic-section" hidden>
+        <span class="kbd">unsupported site</span>
+        <button id="btn-generic-fill" class="btn btn-ghost" type="button">Try generic fill</button>
+        <div id="generic-result" class="generic-result" hidden></div>
+      </section>
+      <section class="more-section">
+        <label for="pdf-select" class="kbd">pdf manual inject</label>
+        <div class="pdf-row">
+          <select id="pdf-select" class="select"><option value="">loading</option></select>
+          <button id="btn-inject" class="btn btn-ghost" type="button">Inject</button>
+        </div>
+      </section>
+      <section class="more-section" id="agent-section" hidden>
+        <span class="kbd">drafts</span>
+        <div id="agent-q-list" class="agent-list"></div>
+        <button id="btn-agent-fill" class="btn btn-ghost" type="button" hidden>Fill drafted answers</button>
+      </section>
+      <section class="more-section" id="hidden-hosts-section" hidden>
+        <span class="kbd">hidden on</span>
+        <ul id="hidden-hosts-list" class="hidden-hosts"></ul>
+      </section>
     </div>
-    <div class="row vertical" id="unfilled-section" style="display:none">
-      <span class="row-label">Unfilled</span>
-      <div id="unfilled-list" class="detail-list"></div>
-    </div>
-  </div>
+  </details>
 
-  <div class="section" id="adapter-section" style="display:none">
-    <label>Detected adapter</label>
-    <button id="btn-adapter-fill" class="btn btn-primary btn-block" title="Run the dedicated ATS adapter that's loaded in this page or one of its iframes">Fill via <span id="adapter-name">adapter</span></button>
-  </div>
-
-  <div class="section" id="generic-section" style="display:none">
-    <label>Unsupported site</label>
-    <button id="btn-generic-fill" class="btn btn-secondary btn-block" title="Best-effort autocomplete + label matching for unknown ATS forms">Try generic fill</button>
-    <div id="generic-result" class="generic-result" style="display:none">
-      <div class="generic-row" id="generic-filled-row" style="display:none">
-        <span class="generic-label generic-label-ok">Filled</span>
-        <span id="generic-filled" class="generic-value"></span>
-      </div>
-      <div class="generic-row" id="generic-unfilled-row" style="display:none">
-        <span class="generic-label generic-label-warn">Unfilled</span>
-        <span id="generic-unfilled" class="generic-value"></span>
-      </div>
-      <div class="generic-row" id="generic-pdf-row" style="display:none">
-        <span class="generic-label generic-label-ok">PDF</span>
-        <span id="generic-pdf" class="generic-value"></span>
-      </div>
-      <div class="generic-row" id="generic-error-row" style="display:none">
-        <span class="generic-label generic-label-err">Error</span>
-        <span id="generic-error" class="generic-value"></span>
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <label for="pdf-select">PDF to inject</label>
-    <select id="pdf-select">
-      <option value="">Loading…</option>
-    </select>
-  </div>
-
-  <div class="actions">
-    <button id="btn-inject" class="btn btn-primary btn-block" title="Inject selected PDF into file input">Inject PDF</button>
-  </div>
-
-  <div class="divider"><span>or</span></div>
-
-  <button id="btn-save-job" class="btn btn-accent btn-block" title="Queue this page for the next collection run">
-    <span class="btn-icon">📌</span> Save this job
-  </button>
-
-  <div id="agent-section" class="card" style="display:none; margin-top:12px;">
-    <div class="row">
-      <span class="row-label">Agent Q&amp;A</span>
-      <span id="agent-status" class="row-value muted">—</span>
-    </div>
-    <div class="row vertical" id="agent-q-row" style="display:none">
-      <span class="row-label">Pending in this tab</span>
-      <div id="agent-q-list" class="agent-list"></div>
-    </div>
-    <button id="btn-agent-fill" class="btn btn-primary btn-block" style="display:none; margin-top:8px;" title="Insert the drafted answers into the matching textareas in this tab">
-      Fill answers in this tab
-    </button>
-  </div>
-
-  <div id="message" class="message"></div>
+  <p id="toast" class="toast" role="status" aria-live="polite"></p>
 
   <script src="popup.js"></script>
 </body>

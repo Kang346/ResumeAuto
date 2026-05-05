@@ -1,0 +1,88 @@
+/* AutoResume design tokens : Quiet workshop tool aesthetic.
+   SYNC: keep the inline copy in extension/content/status-badge.js consistent. */
+
+:root {
+  --paper:    oklch(97% 0.012 80);
+  --surface:  oklch(94% 0.014 80);
+  --rule:     oklch(82% 0.008 80);
+
+  --ink:      oklch(22% 0.025 250);
+  --ink-mute: oklch(40% 0.020 250);
+  --ink-faint:oklch(55% 0.015 240);
+
+  --accent:   oklch(50% 0.18 25);
+  --success:  oklch(50% 0.13 145);
+  --warning:  oklch(70% 0.14 75);
+
+  --tint-success: oklch(94% 0.04 145);
+  --tint-accent:  oklch(95% 0.04 25);
+
+  --on-ink:   oklch(98% 0.008 80);
+
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 10px;
+  --r-pill: 999px;
+
+  --shadow-sm: 0 1px 1px oklch(22% 0.025 250 / 0.06);
+  --shadow-md: 0 4px 12px oklch(22% 0.025 250 / 0.08);
+  --shadow-lg: 0 12px 28px oklch(22% 0.025 250 / 0.12);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable",
+               "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Cascadia Code",
+               "Roboto Mono", Menlo, Consolas, monospace;
+
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 13px;
+  --text-lg: 15px;
+  --text-xl: 18px;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  --gap-1: 4px;
+  --gap-2: 8px;
+  --gap-3: 12px;
+  --gap-4: 16px;
+  --gap-5: 24px;
+  --gap-6: 32px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 120ms;
+  --dur-med:  220ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper:    oklch(15% 0.015 250);
+    --surface:  oklch(22% 0.018 250);
+    --rule:     oklch(35% 0.014 250);
+
+    --ink:      oklch(94% 0.012 80);
+    --ink-mute: oklch(75% 0.012 80);
+    --ink-faint:oklch(62% 0.012 80);
+
+    --accent:   oklch(68% 0.16 25);
+    --success:  oklch(72% 0.14 145);
+    --warning:  oklch(78% 0.13 75);
+
+    --tint-success: oklch(28% 0.04 145);
+    --tint-accent:  oklch(28% 0.05 25);
+
+    --on-ink:   oklch(15% 0.015 250);
+
+    --shadow-sm: 0 1px 1px oklch(0% 0 0 / 0.4);
+    --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.5);
+    --shadow-lg: 0 12px 28px oklch(0% 0 0 / 0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-med:  0ms;
+  }
+}
