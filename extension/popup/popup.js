@@ -215,11 +215,13 @@ async function checkServer() {
   } catch {
     ctx.serverOnline = false;
   }
-  $("#server-status").dataset.state = ctx.serverOnline ? "online" : "offline";
-  $("#server-status").setAttribute(
-    "aria-label",
-    `Server status: ${ctx.serverOnline ? "online" : "offline"}`
-  );
+  const chip = $("#server-chip");
+  const hint = document.querySelector(".server-chip-hint");
+  const state = ctx.serverOnline ? "online" : "offline";
+  chip.dataset.state = state;
+  chip.querySelector(".server-chip-text").textContent = state;
+  chip.setAttribute("aria-label", `Server status: ${state}`);
+  hint.hidden = ctx.serverOnline;
 }
 
 async function loadPdfList() {
@@ -363,9 +365,17 @@ async function onSaveJob() {
     });
     const d = await r.json();
     if (d.ok) {
+      const label = btn.querySelector(".btn-save-label");
+      const useEl = btn.querySelector("use");
       btn.dataset.saved = "true";
-      btn.querySelector("use").setAttribute("href", "../shared/icons.svg#i-bookmark-check");
+      useEl.setAttribute("href", "../shared/icons.svg#i-bookmark-check");
+      if (label) label.textContent = "Saved";
       toast(`saved · ${d.count} in queue`, "success");
+      setTimeout(() => {
+        btn.dataset.saved = "false";
+        useEl.setAttribute("href", "../shared/icons.svg#i-bookmark");
+        if (label) label.textContent = "Save";
+      }, 1500);
     } else {
       toast(`save failed: ${d.error || "unknown"}`, "error");
     }
@@ -564,6 +574,14 @@ async function reEnableHost(host) {
 }
 
 // ── Server-offline handlers ────────────────────────────────
+function onServerChipClick() {
+  if (ctx.serverOnline) {
+    toast(`server: localhost:8765`);
+  } else {
+    onRetryServer();
+  }
+}
+
 async function onRetryServer() {
   toast("checking");
   await checkServer();
@@ -611,6 +629,7 @@ async function init() {
   await Promise.all([refreshAgentSection(), refreshHiddenHosts()]);
 
   $("#btn-save").addEventListener("click", onSaveJob);
+  $("#server-chip").addEventListener("click", onServerChipClick);
   $("#btn-agent-fill").addEventListener("click", onAgentFill);
   $("#btn-inject").addEventListener("click", onPdfManualInject);
 }

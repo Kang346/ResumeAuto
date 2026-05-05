@@ -12,12 +12,19 @@
       <span class="brand-name">AutoResume</span>
     </div>
     <div class="topbar-actions">
-      <button id="btn-save" class="icon-btn" type="button" aria-label="Save this job" title="Save this job for later">
+      <button id="btn-save" class="btn-save" type="button" aria-label="Save this job">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <use href="../shared/icons.svg#i-bookmark"/>
         </svg>
+        <span class="btn-save-label">Save</span>
       </button>
-      <span id="server-status" class="server-dot" data-state="checking" role="status" aria-label="Server status: checking"></span>
+      <div class="server-chip-wrap">
+        <button id="server-chip" class="server-chip" type="button" data-state="checking" aria-label="Server status: checking">
+          <span class="server-chip-dot" aria-hidden="true"></span>
+          <span class="server-chip-text">checking</span>
+        </button>
+        <span class="server-chip-hint" hidden>start server</span>
+      </div>
     </div>
   </header>
 

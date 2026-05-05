@@ -66,45 +66,94 @@ button, select, input {
   gap: var(--gap-3);
 }
 
-.icon-btn {
-  width: 28px;
-  height: 28px;
-  border: 1px solid transparent;
-  border-radius: var(--r-sm);
-  background: transparent;
-  color: var(--ink-mute);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: color var(--dur-fast) var(--ease-out),
-              background var(--dur-fast) var(--ease-out);
+/* ── Server status chip ───────────────────────────────────── */
+.server-chip-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
 }
 
-.icon-btn:hover {
-  color: var(--ink);
+.server-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-2);
+  padding: 4px 8px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--rule);
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--ink-mute);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out);
+}
+
+.server-chip:hover {
   background: var(--surface);
 }
 
-.icon-btn[data-saved="true"] {
-  color: var(--success);
-}
-
-.icon-btn .icon {
-  width: 16px;
-  height: 16px;
-}
-
-.server-dot {
+.server-chip-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: var(--ink-faint);
-  display: inline-block;
 }
 
-.server-dot[data-state="online"]  { background: var(--success); }
-.server-dot[data-state="offline"] { background: var(--accent); }
+.server-chip[data-state="online"] .server-chip-dot {
+  background: var(--success);
+}
+
+.server-chip[data-state="offline"] {
+  color: var(--accent);
+  border-color: color-mix(in oklch, var(--accent) 35%, var(--rule));
+}
+
+.server-chip[data-state="offline"] .server-chip-dot {
+  background: var(--accent);
+}
+
+.server-chip-hint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-mute);
+  letter-spacing: 0.02em;
+  padding-right: 4px;
+}
+
+/* ── Labeled Save button (replaces bookmark icon-only) ────── */
+.btn-save {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-1);
+  padding: 5px 10px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out);
+}
+
+.btn-save:hover {
+  background: var(--surface);
+  border-color: var(--ink-faint);
+}
+
+.btn-save .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.btn-save[data-saved="true"] {
+  color: var(--success);
+  border-color: color-mix(in oklch, var(--success) 35%, var(--rule));
+}
 
 /* ── State host ───────────────────────────────────────────── */
 .state-host {
