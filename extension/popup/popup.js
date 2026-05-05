@@ -14,21 +14,8 @@
 const SERVER = "http://localhost:8765";
 const $ = (s) => document.querySelector(s);
 
-const SUPPORTED_HOST_PATTERNS = [
-  /(^|\.)myworkdayjobs\.com$/i,
-  /^boards\.greenhouse\.io$/i,
-  /^job-boards\.greenhouse\.io$/i,
-  /^jobs\.lever\.co$/i,
-  /^jobs\.ashbyhq\.com$/i,
-];
-
-function isSupportedHost(urlString) {
-  try {
-    const host = new URL(urlString).hostname;
-    return SUPPORTED_HOST_PATTERNS.some((re) => re.test(host));
-  } catch {
-    return false;
-  }
+function isFillablePage(url) {
+  return typeof url === "string" && /^https?:/i.test(url);
 }
 
 function urlMatchesTab(entryUrl, tabUrl) {
@@ -78,8 +65,8 @@ function iconSvg(symbolId) {
 // ── Templates ───────────────────────────────────────────────
 const t = {
   idle: () => el("section", {},
-    el("p", { class: "headline" }, "No application form here"),
-    el("p", { class: "subline" }, "Open a Greenhouse, Lever, Ashby, or Workday posting.")
+    el("p", { class: "headline" }, "Nothing to fill here"),
+    el("p", { class: "subline" }, "Open a job posting in a normal tab to begin.")
   ),
 
   detected: ({ atsName, host }) => el("section", {},
@@ -146,7 +133,22 @@ const t = {
 
   "server-offline": () => el("section", {},
     el("p", { class: "headline" }, "Server offline"),
-    el("p", { class: "subline" }, "Run: python server/serve.py"),
+    el("p", { class: "subline" }, "The local server reads form fields. Start it with:"),
+    el("button", {
+      id: "btn-cmd-copy",
+      class: "cmd-block",
+      type: "button",
+      title: "Click to copy",
+    },
+      el("span", { class: "cmd-text" }, "python server/serve.py"),
+      iconSvg("i-copy")
+    ),
+    el("div", { class: "action-row" },
+      el("button", { id: "btn-retry-server", class: "btn btn-ghost btn-block", type: "button" },
+        iconSvg("i-rotate"),
+        "Retry connection"
+      )
+    )
   ),
 };
 
@@ -170,6 +172,10 @@ function render(stateName, data = {}) {
   host.replaceChildren(node);
   const fillBtn = $("#btn-fill");
   if (fillBtn) fillBtn.addEventListener("click", onFillClick);
+  const retryBtn = $("#btn-retry-server");
+  if (retryBtn) retryBtn.addEventListener("click", onRetryServer);
+  const cmdBtn = $("#btn-cmd-copy");
+  if (cmdBtn) cmdBtn.addEventListener("click", onCopyCmd);
 }
 
 function deriveAndRender() {
@@ -191,9 +197,9 @@ function deriveAndRender() {
       });
     }
   }
-  if (ctx.adapterFrame) {
+  if (ctx.adapterFrame || isFillablePage(ctx.tab?.url)) {
     return render("detected", {
-      atsName: ctx.adapterFrame.name,
+      atsName: ctx.adapterFrame?.name || "form",
       host: ctx.tab ? originOfUrl(ctx.tab.url) : "",
     });
   }
@@ -284,8 +290,11 @@ async function onFillClick() {
           return { ok: false, error: "triggerFill missing" };
         },
       });
+      // Detector posts /state after fill completes; brief delay then re-render.
+      await new Promise((r) => setTimeout(r, 400));
+      await loadLastState();
     } else {
-      // Unsupported host: load the generic stack and run it everywhere.
+      // No adapter for this site: load the generic stack and run it.
       await chrome.scripting.executeScript({
         target: { tabId: ctx.tab.id, allFrames: true },
         files: [
@@ -299,12 +308,23 @@ async function onFillClick() {
         target: { tabId: ctx.tab.id, allFrames: true },
         func: () => window.__autoresumeRunGeneric?.(),
       });
-      renderGenericResult(pickBestFrameResult(frameResults));
+      const best = pickBestFrameResult(frameResults);
+      const filled = best?.filled || [];
+      const unfilled = best?.unfilled || [];
+      if (filled.length === 0 && unfilled.length === 0 && !best?.error) {
+        toast("no form fields found on this page", "error");
+        ctx.lastState = null;
+      } else {
+        ctx.lastState = {
+          url: ctx.tab.url,
+          ats: "form",
+          status: best?.error ? "error" : (unfilled.length > 0 ? "partial" : "complete"),
+          filled,
+          unfilled,
+          error: best?.error || null,
+        };
+      }
     }
-
-    // Detector posts /state after fill completes; brief delay then re-render.
-    await new Promise((r) => setTimeout(r, 400));
-    await loadLastState();
   } catch (err) {
     ctx.lastState = { ...(ctx.lastState || {}), error: err.message, url: ctx.tab.url };
   } finally {
@@ -328,34 +348,6 @@ function pickBestFrameResult(frameResults) {
   return results.reduce((a, b) =>
     (b.error || "").length > (a.error || "").length ? b : a
   );
-}
-
-function renderGenericResult(result) {
-  const box = $("#generic-result");
-  if (!result) {
-    box.hidden = true;
-    return;
-  }
-  box.replaceChildren();
-  box.hidden = false;
-  const filled = result.filled || [];
-  const unfilled = result.unfilled || [];
-  if (filled.length) {
-    box.appendChild(
-      el("span", { class: "row-fill" }, `filled ${filled.length}: ${filled.join(", ")}`)
-    );
-  }
-  if (unfilled.length) {
-    box.appendChild(
-      el("span", { class: "row-skip" }, `skipped ${unfilled.length}: ${unfilled.join(", ")}`)
-    );
-  }
-  if (result.pdf) {
-    box.appendChild(el("span", { class: "row-fill" }, `pdf: ${result.pdf}`));
-  }
-  if (result.error) {
-    box.appendChild(el("span", { class: "row-err" }, `error: ${result.error}`));
-  }
 }
 
 // ── Bookmark accessory ─────────────────────────────────────
@@ -571,6 +563,28 @@ async function reEnableHost(host) {
   toast(`re-enabled on ${host}`, "success");
 }
 
+// ── Server-offline handlers ────────────────────────────────
+async function onRetryServer() {
+  toast("checking");
+  await checkServer();
+  if (ctx.serverOnline) {
+    await Promise.all([loadPdfList(), loadLastState()]);
+    toast("server online", "success");
+  } else {
+    toast("still offline", "error");
+  }
+  deriveAndRender();
+}
+
+async function onCopyCmd() {
+  try {
+    await navigator.clipboard.writeText("python server/serve.py");
+    toast("copied", "success");
+  } catch {
+    toast("copy failed", "error");
+  }
+}
+
 // ── Toast ───────────────────────────────────────────────────
 function toast(text, tone = "") {
   const node = $("#toast");
@@ -591,17 +605,12 @@ async function init() {
 
   if (ctx.tab?.id != null) {
     ctx.adapterFrame = await detectAdapterFrame(ctx.tab.id);
-    // Generic-fill section visible for unsupported hosts only.
-    if (ctx.tab.url && !ctx.adapterFrame && !isSupportedHost(ctx.tab.url)) {
-      $("#generic-section").hidden = false;
-    }
   }
 
   deriveAndRender();
   await Promise.all([refreshAgentSection(), refreshHiddenHosts()]);
 
   $("#btn-save").addEventListener("click", onSaveJob);
-  $("#btn-generic-fill").addEventListener("click", onFillClick);
   $("#btn-agent-fill").addEventListener("click", onAgentFill);
   $("#btn-inject").addEventListener("click", onPdfManualInject);
 }

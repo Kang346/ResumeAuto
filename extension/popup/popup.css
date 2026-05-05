@@ -205,6 +205,44 @@ button, select, input {
   margin-top: var(--gap-2);
 }
 
+/* ── Code-style command block (server-offline) ──────────────── */
+.cmd-block {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-2);
+  width: 100%;
+  margin-top: var(--gap-2);
+  padding: var(--gap-2) var(--gap-3);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out);
+}
+
+.cmd-block:hover {
+  background: oklch(from var(--surface) calc(l - 0.02) c h);
+  border-color: var(--ink-faint);
+}
+
+.cmd-block .cmd-text {
+  flex: 1;
+  text-align: left;
+  user-select: text;
+}
+
+.cmd-block .icon {
+  width: 14px;
+  height: 14px;
+  color: var(--ink-mute);
+  flex-shrink: 0;
+}
+
 /* ── Buttons ──────────────────────────────────────────────── */
 .btn {
   font-size: var(--text-md);
@@ -344,23 +382,6 @@ button, select, input {
 
 .pdf-row .select { flex: 1; }
 .pdf-row .btn { padding: 7px var(--gap-3); font-size: var(--text-sm); }
-
-.generic-result {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--ink-mute);
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-1);
-  padding: var(--gap-2) var(--gap-3);
-  background: var(--surface);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-sm);
-}
-
-.generic-result .row-fill   { color: var(--success); }
-.generic-result .row-skip   { color: var(--warning); }
-.generic-result .row-err    { color: var(--accent); }
 
 .agent-list {
   display: flex;
