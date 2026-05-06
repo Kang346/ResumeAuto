@@ -442,6 +442,236 @@ AutoFill.fillCombobox = async function (triggerEl, searchValue, optionMatch) {
   return false;
 };
 
+// Fill a react-select-style combobox where the trigger IS the search input
+// (Greenhouse's job-boards.greenhouse.io frontend, class="select__input"
+// role="combobox"). fillCombobox above assumes the trigger is a button with
+// a separate search input nested inside; here trigger and search input are
+// the same element, so we drive it differently:
+//   1. focus + click to open the listbox
+//   2. try matching options as-is (small lists like Yes/No don't need search,
+//      and typing into them sometimes flakes out the listbox)
+//   3. if no match, type the value to filter, then match again
+// Returns { ok, reason } so the caller can mark the field unfilled cleanly.
+AutoFill.fillReactSelect = async function (inputEl, value, displayName) {
+  if (!inputEl || value == null || value === "") {
+    return { ok: false, reason: "no input or value" };
+  }
+
+  const want = String(value).toLowerCase().trim();
+  const norm = (s) => (s || "").toLowerCase().trim();
+
+  // Locate the active react-select listbox for THIS input. Three-layer
+  // resolution: aria-controls (react-select v5; current Greenhouse leaves it
+  // null but free win on upgrade), same-container scope (verified live for
+  // current Greenhouse layout), then document-wide singleton as a portal
+  // escape hatch. fillReactSelect is serial so at most one menu exists at
+  // any time — the global query is safe.
+  const findOptionsRoot = () => {
+    const ariaCtrl = inputEl.getAttribute("aria-controls");
+    if (ariaCtrl) {
+      const root = document.getElementById(ariaCtrl);
+      if (root) return root;
+    }
+    const scoped = inputEl.closest(".select__container")
+                        ?.querySelector(".select__menu");
+    if (scoped) return scoped;
+    return document.querySelector(".select__menu");
+  };
+
+  const findMatch = () => {
+    const root = findOptionsRoot();
+    if (!root) return null;
+    const opts = [...root.querySelectorAll('[role="option"], .select__option')];
+    if (opts.length === 0) return null;
+    return (
+      opts.find((o) => norm(o.textContent) === want) ||
+      opts.find((o) => norm(o.textContent).startsWith(want)) ||
+      opts.find((o) => norm(o.textContent).includes(want)) ||
+      null
+    );
+  };
+
+  // Read the rendered selected-value chip. Result-oriented success check —
+  // covers the "react-select auto-commits on blur when typed value uniquely
+  // matches" path that earlier mis-reported as ok:false.
+  const verifySelected = () => {
+    const sv = inputEl.closest(".select__control")
+                    ?.querySelector(".select__single-value");
+    if (!sv) return false;
+    return norm(sv.textContent).includes(want);
+  };
+
+  // Idempotency: if the field already shows what we want, do nothing. Avoids
+  // re-opening the listbox and flashing the UI on a second Fill click.
+  if (verifySelected()) return { ok: true };
+
+  // (1) Open the listbox. Plain element.click() doesn't reliably trigger
+  // react-select's open-menu reaction on this Greenhouse build — the full
+  // pointerdown / mousedown / pointerup / mouseup / click chain does.
+  try { inputEl.focus(); } catch {}
+  AutoFill.realClick(inputEl);
+  await AutoFill.sleep(250);
+
+  // (2) Strategy A: try matching without typing. Polls a few times because
+  // the listbox can take a beat to render after click.
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const target = findMatch();
+    if (target) {
+      target.click();
+      await AutoFill.sleep(150);
+      try { inputEl.dispatchEvent(new FocusEvent("blur", { bubbles: true })); } catch {}
+      return { ok: true };
+    }
+    await AutoFill.sleep(200);
+  }
+
+  // (3) Strategy B: type to filter. We can't use AutoFill.setValue here —
+  // it ends with a blur, and react-select closes the menu on blur, killing
+  // the filtered options before our poll loop sees them. Inline a setValue
+  // clone WITHOUT the blur step so the menu stays open.
+  const typeIntoInput = (val) => {
+    try { inputEl.focus(); } catch {}
+    if (inputEl._valueTracker) {
+      try { inputEl._valueTracker.setValue("__autoresume_force_change__"); } catch {}
+    }
+    const setter = Object.getOwnPropertyDescriptor(
+      window.HTMLInputElement.prototype, "value"
+    )?.set;
+    if (setter) setter.call(inputEl, String(val));
+    else inputEl.value = String(val);
+    try {
+      inputEl.dispatchEvent(new InputEvent("input", {
+        bubbles: true, cancelable: true,
+        data: String(val), inputType: "insertText",
+      }));
+    } catch {
+      inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+    // NO blur — react-select closes the menu on blur and we'd lose the
+    // filtered option list before findMatch can poll it.
+  };
+  typeIntoInput(value);
+  await AutoFill.sleep(350);
+
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const target = findMatch();
+    if (target) {
+      target.click();
+      await AutoFill.sleep(150);
+      try { inputEl.dispatchEvent(new FocusEvent("blur", { bubbles: true })); } catch {}
+      return { ok: true };
+    }
+    await AutoFill.sleep(200);
+  }
+
+  // Commit-fallback: react-select auto-focuses the first matching option
+  // (.select__option--is-focused) after typing. Pressing Enter on the input
+  // commits that focused option even when our substring matcher missed.
+  try {
+    inputEl.dispatchEvent(new KeyboardEvent("keydown", {
+      key: "Enter", code: "Enter", keyCode: 13, which: 13,
+      bubbles: true, cancelable: true,
+    }));
+  } catch {}
+  await AutoFill.sleep(200);
+
+  // Close the listbox cleanly so the page isn't left in a weird state.
+  try {
+    inputEl.dispatchEvent(new KeyboardEvent("keydown", {
+      key: "Escape", code: "Escape", keyCode: 27, which: 27, bubbles: true,
+    }));
+  } catch {}
+  document.body.click();
+
+  // Last chance: react-select may have auto-committed the typed value on
+  // blur (or via the Enter above) even though we never clicked an option.
+  // Trust the rendered chip.
+  if (verifySelected()) return { ok: true };
+
+  // No options anywhere AND the chip is empty — selectors might be off for
+  // this variant. Surface a console warning so we can iterate on selectors
+  // rather than silently mis-reporting.
+  if (!findOptionsRoot()) {
+    console.warn(
+      "[AutoFill.fillReactSelect] could not locate listbox for",
+      displayName || inputEl.id || "(unknown field)",
+      "— check aria-controls / .select__container selectors"
+    );
+  }
+
+  // Clear typed search text so the field's UI reflects its true (empty)
+  // state — otherwise the input visually looks filled but no option is
+  // committed, masking the failure on review.
+  try { AutoFill.setValue(inputEl, ""); } catch {}
+
+  return { ok: false, reason: `no option matched "${value}" for ${displayName || "react-select"}` };
+};
+
+// Fill the country picker exposed by intl-tel-input (used by the modern
+// Greenhouse phone field). The trigger is a <button class="iti__selected-country">
+// that opens a dialog containing a <ul class="iti__country-list"> of <li>
+// items — each <li> has a country name span + a flag class. Plain
+// element.click() may not open the dialog because the library binds pointer
+// events, so we use realClick.
+AutoFill.fillIntlTelCountry = async function (countryName) {
+  if (!countryName) return { ok: false, reason: "no country name" };
+
+  const trigger = document.querySelector("button.iti__selected-country");
+  if (!trigger) return { ok: false, reason: "no iti__selected-country button" };
+
+  const want = String(countryName).toLowerCase().trim();
+  const norm = (s) => (s || "").toLowerCase().trim();
+
+  // Open the dialog
+  AutoFill.realClick(trigger);
+  await AutoFill.sleep(300);
+
+  const findCountry = () => {
+    let candidates = [...document.querySelectorAll(".iti__country-list li.iti__country")];
+    if (candidates.length === 0) {
+      candidates = [...document.querySelectorAll('[role="listbox"] [role="option"]')];
+    }
+    if (candidates.length === 0) return null;
+
+    const textOf = (li) => {
+      const nameEl = li.querySelector(".iti__country-name");
+      return norm(nameEl ? nameEl.textContent : li.textContent);
+    };
+    return (
+      candidates.find((li) => textOf(li) === want) ||
+      candidates.find((li) => textOf(li).startsWith(want)) ||
+      candidates.find((li) => textOf(li).includes(want)) ||
+      null
+    );
+  };
+
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const target = findCountry();
+    if (target) {
+      target.click();
+      await AutoFill.sleep(200);
+      // Verify: dialog closed (aria-expanded false) OR the flag class changed.
+      const expanded = trigger.getAttribute("aria-expanded");
+      const flag = trigger.querySelector(".iti__flag");
+      const flagClass = flag ? flag.className : "";
+      if (expanded === "false" || expanded === null || /iti__[a-z]{2}\b/.test(flagClass)) {
+        return { ok: true };
+      }
+      return { ok: true };
+    }
+    await AutoFill.sleep(250);
+  }
+
+  // Close cleanly on miss
+  try {
+    trigger.dispatchEvent(new KeyboardEvent("keydown", {
+      key: "Escape", code: "Escape", keyCode: 27, which: 27, bubbles: true,
+    }));
+  } catch {}
+  document.body.click();
+  return { ok: false, reason: `country "${countryName}" not found in iti list` };
+};
+
 // Find the section/fieldset/container that holds a heading like "Work Experience".
 // Used to scope "Add" / "Add Another" button discovery to one section so we
 // don't accidentally click the wrong Add button on a multi-section page.
