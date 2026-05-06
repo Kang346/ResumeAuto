@@ -85,6 +85,60 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 });
 
 // ──────────────────────────────────────────────────────────────────────
+// Keyboard shortcut: save current job. Mirrors the popup's Save button
+// (POST /save-job) and flashes the toolbar badge so the user gets feedback
+// without the popup being open. The user binds the actual key in
+// chrome://extensions/shortcuts (default suggestion: Alt+S).
+// ──────────────────────────────────────────────────────────────────────
+
+async function flashBadge(tabId, text, color, durationMs = 1500) {
+  let prevText = "";
+  let prevColor = null;
+  try {
+    prevText = await chrome.action.getBadgeText({ tabId });
+    prevColor = await chrome.action.getBadgeBackgroundColor({ tabId });
+  } catch {}
+
+  await chrome.action.setBadgeText({ text, tabId });
+  await chrome.action.setBadgeBackgroundColor({ color, tabId });
+
+  setTimeout(async () => {
+    try {
+      await chrome.action.setBadgeText({ text: prevText || "", tabId });
+      if (prevColor) {
+        await chrome.action.setBadgeBackgroundColor({ color: prevColor, tabId });
+      }
+    } catch {}
+  }, durationMs);
+}
+
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command !== "save-job") return;
+
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id || !tab.url || !/^https?:/.test(tab.url)) return;
+
+  let result;
+  try {
+    const r = await fetch(`${SERVER_URL}/save-job`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: tab.url, title: tab.title || "" }),
+    });
+    result = await r.json();
+  } catch {
+    result = { ok: false, error: "server offline" };
+  }
+
+  if (result.ok) {
+    flashBadge(tab.id, "✓", "#27ae60");
+  } else {
+    flashBadge(tab.id, "✗", "#e74c3c");
+    console.warn("[AutoResume] save-job failed:", result.error || "unknown");
+  }
+});
+
+// ──────────────────────────────────────────────────────────────────────
 // External agent bridge (Agent / Claude in Chrome / scripted browsers)
 // Reachable via:  chrome.runtime.sendMessage(EXT_ID, { action: "..." })
 // from any page whose origin matches manifest.externally_connectable.matches.
