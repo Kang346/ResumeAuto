@@ -84,13 +84,13 @@
 %----------HEADING----------
 %%% HEADING_START %%%
 \begin{center}
-  \textbf{\Huge \scshape Alex Doe} \\ \vspace{1pt}
+  \textbf{\Huge \scshape Zikang Zhang} \\ \vspace{1pt}
   \small
-  San Francisco, CA, USA $|$
-  \href{tel:+15551234567}{+1 (555) 123-4567} $|$
-  \href{mailto:alex.doe@example.com}{alex.doe@example.com} $|$
-  \href{https://linkedin.com/in/alex-doe-demo}{linkedin.com/in/alex-doe-demo} $|$
-  \href{https://github.com/alex-doe-demo}{github.com/alex-doe-demo}
+  Chicago, IL, USA $|$
+  \href{tel:+19298442570}{+1 (929) 844-2570} $|$
+  \href{mailto:2027962673z@gmail.com}{2027962673z@gmail.com} $|$
+  \href{https://linkedin.com/in/zikang-zhang-zzk}{linkedin.com/in/zikang-zhang-zzk} $|$
+  \href{https://github.com/Kang346}{github.com/Kang346}
 \end{center}
 %%% HEADING_END %%%
 
@@ -99,11 +99,11 @@
 %%% EDUCATION_START %%%
   \resumeSubHeadingListStart
     \resumeSubheading
-      {State University}{Anytown, USA}
-      {M.S. in Computer Science}{Sep. 2023 -- Dec. 2024}
+      {New York University}{New York, NY}
+      {M.S. in Computer Science}{Sep. 2024 -- Dec. 2025}
     \resumeSubheading
-      {Example College}{Anytown, USA}
-      {B.S. in Computer Science}{Sep. 2019 -- Jul. 2023}
+      {Peking University}{Beijing, China}
+      {B.S. in Computer Science}{Sep. 2020 -- Jul. 2024}
   \resumeSubHeadingListEnd
 %%% EDUCATION_END %%%
 
@@ -113,30 +113,30 @@
   \resumeSubHeadingListStart
 
     \resumeSubheading
-      {Software Engineer}{Jan. 2025 -- Present}
-      {ExampleCorp}{San Francisco, CA}
+      {Machine Learning Engineer}{Feb. 2026 -- Present}
+      {Scam AI}{Remote}
       \resumeItemListStart
-        \resumeItem{Built a high-throughput event ingestion service in Go handling $\sim$50K req/s; reduced p99 latency from 220ms to 45ms by introducing batched writes, connection pooling, and a sharded in-memory buffer with backpressure}
-        \resumeItem{Designed and shipped an internal feature-flag SDK adopted by 12 services; implemented gradual rollout, percentage targeting, and a Redis-backed audit log enabling sub-second flag propagation across regions}
-        \resumeItem{Led migration of a legacy monolith auth flow to an OAuth2 + JWT microservice; coordinated with 4 teams, wrote backwards-compatible shims, and rolled out to 100\% of users with zero downtime}
+        \resumeItem{Profiled per-layer activations to diagnose accuracy loss in quantized deepfake detection model; implemented mixed-precision quantization with asymmetric scheme for Swish activations, recovering accuracy from 80\% to 92\% (vs. 96\% original) while reducing model size from $\sim$608MB to $\sim$304MB}
+        \resumeItem{Replaced Swish with SiLU for HTP compatibility, achieving 100\% NPU offload; compiled and deployed multi-model pipeline on Snapdragon X2 Elite via API, reaching 63.3ms latency ($\sim$16 FPS) for real-time inference}
+        \resumeItem{Identified FP32-to-FP16 prediction drift ($-7$\% positive, $+5$\% negative) and resolved via threshold calibration, preserving classification reliability under reduced precision}
       \resumeItemListEnd
 
     \resumeSubheading
-      {Software Engineer Intern}{Jun. 2024 -- Aug. 2024}
-      {DemoLabs}{Remote}
+      {AI Research Engineer Intern}{Sep. 2025 -- Dec. 2025}
+      {Lenovo -- Perception Engine}{Chicago, IL}
       \resumeItemListStart
-        \resumeItem{Prototyped a retrieval-augmented chatbot over internal documentation using LangChain, FAISS, and OpenAI embeddings; achieved 85\% answer accuracy on a 200-question eval set, beating keyword-search baseline by 32\%}
-        \resumeItem{Optimized vector index ingestion by parallelizing embedding calls and adding incremental updates; reduced full reindex time from 4 hours to 35 minutes on a 200K-document corpus}
-        \resumeItem{Wrote end-to-end tests covering 90\% of critical paths; integrated with GitHub Actions to gate deploys, catching 6 regressions before they reached staging}
+        \resumeItem{Contributed to the Windows Perception Engine by implementing robust C++ interfaces for Qdrant and Elasticsearch, enabling high-throughput vector storage, metadata-aware filtering, and low-latency semantic retrieval that powered downstream context-reasoning and personalization modules}
+        \resumeItem{Co-designed the system's session segmentation logic, defining how continuous screen and application events are grouped into meaningful interaction sessions to improve retrieval relevance and contextual grounding}
+        \resumeItem{Implemented key components and researched retrieval/summarization strategies for the upcoming context $\rightarrow$ session $\rightarrow$ vector DB pipeline, helping guide architectural decisions for future context-enhanced responses}
       \resumeItemListEnd
 
     \resumeSubheading
-      {Software Engineer Intern}{Jun. 2023 -- Aug. 2023}
-      {SampleSoft}{Anytown, USA}
+      {AI Research Engineer Intern}{Jun. 2025 -- Aug. 2025}
+      {Lenovo -- Affective Computing Benchmarking}{Chicago, IL}
       \resumeItemListStart
-        \resumeItem{Implemented a distributed task scheduler in Python with Celery and RabbitMQ; supported priority queues, retries with exponential backoff, and dead-letter routing for $\sim$1.2M daily jobs}
-        \resumeItem{Refactored a 5K-line legacy data-export module into a typed, testable streaming pipeline; raised test coverage from 12\% to 78\% and cut wall-clock export time by 40\%}
-        \resumeItem{Built an internal admin dashboard with React, TypeScript, and Tailwind; reduced manual ops time for the support team by $\sim$6 hours per week}
+        \resumeItem{Engineered two synthetic emotion-transition benchmarks using LLM-simulated trajectories from 1k images; enabled controlled A/B testing of emotional-dynamics pipelines without real-world temporal data}
+        \resumeItem{Architected a dual-pipeline framework to evaluate CNN+LLM vs. VLM; used Gemini 2.5 Flash to quantify response quality, identifying an average 8\% performance lead in label-based logic over direct VLM inference}
+        \resumeItem{Led distributional \& failure-mode analyses comparing CNN-labels with VLM-descriptions; identified critical semantic drift in small-VLM sequences, providing data-driven insights for model selection}
       \resumeItemListEnd
 
   \resumeSubHeadingListEnd
