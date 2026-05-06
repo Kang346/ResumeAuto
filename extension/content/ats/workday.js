@@ -74,6 +74,18 @@ window.__atsModule = {
     );
     await this.fillField(
       {
+        automationId: "addressSection_addressLine2",
+        idSuffix: "--addressLine2",
+        autocomplete: "address-line2",
+        labelText: "Address Line 2",
+      },
+      personalInfo.location?.line2,
+      "address_line2",
+      filled,
+      unfilled
+    );
+    await this.fillField(
+      {
         automationId: "addressSection_city",
         idSuffix: "--city",
         autocomplete: "address-level2",

@@ -53,10 +53,24 @@ AutoFill.setValue = function (element, value) {
     return false;
   }
 
-  // (1) Focus first so the form library marks this field as "touched". Without
-  // this some forms (RHF, Mantine) treat the field as never-interacted-with
-  // even after we assign a value, and refuse to clear the required validator.
+  // (1) Mimic a real user click landing in this field:
+  //   pointerdown → mousedown → focus → focusin → pointerup → mouseup → click
+  // Workday's form library marks a field "touched" only after the full
+  // pointer/mouse + focusout sequence; without these events it leaves the
+  // required-validator armed even when the value is in the DOM. The synthetic
+  // blur+input we used previously was too thin. (See diagnostic where manual
+  // click made the error vanish without changing the value.) `el.focus()`
+  // also silently no-ops on some Workday wrappers, so we dispatch focusin
+  // explicitly as a fallback.
+  fireMouseSequence(element, "down");
   try { element.focus(); } catch {}
+  try { element.dispatchEvent(new FocusEvent("focusin", { bubbles: true })); } catch {}
+  fireMouseSequence(element, "up");
+  try {
+    element.dispatchEvent(new MouseEvent("click", {
+      bubbles: true, cancelable: true, view: window, button: 0,
+    }));
+  } catch {}
 
   // (2) Force react-hook-form's _valueTracker to a sentinel before assigning.
   // RHF compares the tracker's cached value to the new DOM value to decide
@@ -99,12 +113,32 @@ AutoFill.setValue = function (element, value) {
   element.dispatchEvent(inputEvent);
   element.dispatchEvent(new Event("change", { bubbles: true }));
 
-  // (5) Blur to fire any onBlur validators and close the touched/dirty cycle.
+  // (5) Mimic the user clicking elsewhere to commit the value. blur()
+  // naturally fires both blur and focusout when the element is actually
+  // focused; explicit focusout dispatch is a fallback for the wrapper
+  // case where focus() no-op'd.
   try { element.blur(); } catch {}
   element.dispatchEvent(new Event("blur", { bubbles: true }));
+  try { element.dispatchEvent(new FocusEvent("focusout", { bubbles: true })); } catch {}
 
   return true;
 };
+
+function fireMouseSequence(el, phase) {
+  // phase = "down" or "up". Fires both pointer and mouse variants because
+  // some libraries listen to one and not the other.
+  try {
+    el.dispatchEvent(new PointerEvent(`pointer${phase}`, {
+      bubbles: true, cancelable: true, view: window,
+      pointerType: "mouse", isPrimary: true, button: 0,
+    }));
+  } catch {}
+  try {
+    el.dispatchEvent(new MouseEvent(`mouse${phase}`, {
+      bubbles: true, cancelable: true, view: window, button: 0,
+    }));
+  } catch {}
+}
 
 // Select a <select> option by value or visible text
 AutoFill.selectOption = function (selectEl, value) {
