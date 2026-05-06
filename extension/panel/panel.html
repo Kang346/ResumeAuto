@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="../shared/tokens.css">
-  <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="../popup/popup.css">
+  <link rel="stylesheet" href="panel.css">
 </head>
 <body>
   <header class="topbar">
@@ -18,11 +19,6 @@
         </svg>
         <span class="btn-save-label">Save</span>
       </button>
-      <button id="btn-open-panel" class="btn-icon" type="button" aria-label="Open in side panel" title="Open in side panel">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <use href="../shared/icons.svg#i-panel-right-open"/>
-        </svg>
-      </button>
       <div class="server-chip-wrap">
         <button id="server-chip" class="server-chip" type="button" data-state="checking" aria-label="Server status: checking">
           <span class="server-chip-dot" aria-hidden="true"></span>
@@ -34,6 +30,15 @@
   </header>
 
   <main class="state-host" id="state-host" aria-live="polite"></main>
+
+  <section class="queue-strip" id="queue-strip">
+    <div class="queue-header">
+      <span class="kbd">queue</span>
+      <span class="queue-count" id="queue-count"></span>
+    </div>
+    <ul class="queue-list" id="queue-list"></ul>
+    <p class="queue-empty" id="queue-empty" hidden>no saved jobs yet · press Alt+S on a posting</p>
+  </section>
 
   <details class="more" id="more">
     <summary>
@@ -64,6 +69,6 @@
 
   <p id="toast" class="toast" role="status" aria-live="polite"></p>
 
-  <script src="popup.js" type="module"></script>
+  <script src="panel.js" type="module"></script>
 </body>
 </html>
