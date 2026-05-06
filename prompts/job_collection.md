@@ -27,6 +27,8 @@ Suggested field schema (use exactly these names, or adapt the prompts to your ow
 | `Note` | text | **User-only** — the agent must NEVER write here. |
 | `Agent Note` | text | All agent output goes here, with emoji prefix. |
 | `JD Summary` | text | 2–3 sentence summary; full JD lives in the page body. |
+| `Dedup Key` | text | System-managed. Strongest available identifier (ATS job ID / req id / triple). Computed by [pipeline/dedup.py](../pipeline/dedup.py). Never edit by hand. |
+| `Job Signature` | text | System-managed. Always-present `(company, title, location)` fingerprint, stored alongside `Dedup Key` so cross-source matches still work when one entry has an ATS-ID key and the other only the triple. Never edit by hand. |
 
 The full JD lives in the page **body** (not a property), formatted per the structured-summary template at the end of this file.
 
@@ -93,7 +95,7 @@ Find new postings that match the profile and write each one to the configured No
 **Other skip signals**:
 - Pure consulting firms with bench staffing
 - Companies with no apparent AI/ML product (unless the role is SWE NewGrad at a top-tier non-AI company like Stripe/Snowflake/Databricks where AI work is part of broader engineering)
-- Re-postings of jobs already in the database (check by company + job title)
+- Re-postings of jobs already in the database (see validation rule #9 — uses [pipeline/dedup.py](../pipeline/dedup.py))
 
 ---
 
@@ -143,7 +145,11 @@ For each candidate posting, before writing to the database, ALL of the following
 6. ✅ **YoE within range** — JD does NOT require more years than the user has. Acceptable ranges depend on the user; default for new-grad: "0-2 years", "1-3 years", "entry level", "new grad", "early career", or no YoE specified.
 7. ✅ **Salary band**, if disclosed, isn't laughably low (skip < $90K base for US SWE, adapt for your market)
 8. ✅ **Location is acceptable** (US or Remote-US for US-based candidates; adapt to your situation)
-9.  ✅ **Not already in the database** — check by Company + Job Title before writing
+9.  ✅ **Not already in the database** — compute keys for this candidate by running:
+    ```
+    python -m pipeline.dedup compute --json '{"url":"<Apply Link>","company":"<Company Name>","title":"<Job Title>","location":"<Base>"}'
+    ```
+    From the JSON output, take both `dedup_key` and `job_signature` and check membership against the working set built in step 0.5. **If either is already present → SKIP** and report `dup of <existing entry>` in the round summary. Otherwise, when writing the new Notion page, set the `Dedup Key` field to the computed `dedup_key` AND the `Job Signature` field to the computed `job_signature`, then add both values to your working set so later candidates in the same round are also deduped.
 
 **If ANY check fails → skip without creating the page.** Do not weaken or reinterpret these rules. Do not add a job "just in case" — the cost of a bad entry is the user's wasted time.
 
@@ -226,6 +232,8 @@ When the user invokes this prompt, do the following in order:
    - If it fails → record `Saved → SKIP: <reason>` in the round summary
    - After processing each entry (pass or fail), POST its URL to `http://localhost:8765/clear-pending-jobs` (body: `{"urls": ["<url>"]}`) so it's removed from the queue
    - If `user_data/pending_jobs.json` is empty or the file doesn't exist, skip this step silently
+   - **Note:** Saved-queue entries also flow through validation rule #9 (dedup) — compute the dedup key for each one before writing.
+0.5. **Build the dedup index.** Query the Notion database for every existing page and read **both** `Dedup Key` and `Job Signature` into the same working set held in your context for this round. Reading both is what catches the cross-source case (existing entry stored an ATS job ID, new candidate only has the company+title+location triple) — see the schema notes above for why. Pages with both fields empty (legacy entries that haven't been backfilled) should be tracked separately by `(Company Name, Job Title, Base)` so step 3 can still warn on probable duplicates against them. Reuse this set for every candidate in step 3 and the saved queue in step 0 — do not re-query Notion per candidate.
 1. **Ask the user how many jobs they want this round** (default: 10–15) so the session has a clear stopping point.
 2. **Ask the user for any focus** for this round (e.g. "only Anthropic / OpenAI / etc.", "only remote", "only NYC", "only fresh-this-week"). Default: no focus, broad search.
 3. **Search**, validate per checklist, write to the database.
