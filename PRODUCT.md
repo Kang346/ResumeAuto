@@ -60,7 +60,7 @@ Emotional goals:
 
 1. **Show state, never decorate state.** A status indicator is data, not art. Hero-metric layouts (big checkmark plus large field count plus supporting stats) are banned. Status reads as compact text or a small mono summary. The user already saw their form fill in real time; the popup confirms what happened, it doesn't celebrate.
 
-2. **Get out of the way.** The tool's UI competes with the ATS form for the user's attention, and the form should win. Default to a minimal footprint: hide the in-page widget by default, let the popup do the heavy lifting. Surface UI only when the user asks for it or when there's something they must act on.
+2. **Get out of the way.** The tool's UI competes with the ATS form for the user's attention, and the form should win. Default to a minimal footprint: an edge-anchored pill (ink-toned surface, brand-mark accent only — never a mascot color block) that the user can pop open into a panel when they need it. The heavy UI lives behind the pill, not in front of the form. Surface UI only when the user asks for it or when there's something they must act on.
 
 3. **Press once, do everything.** One primary action per state. The current "Fill Page + Inject PDF + Save Job" three-button row asks the user to make a routing decision they shouldn't have to make. Fill Page should also inject the PDF; Save Job lives in a corner accessory slot, not in the main flow.
 

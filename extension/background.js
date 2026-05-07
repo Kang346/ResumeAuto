@@ -53,6 +53,19 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+// Toolbar click: inject + toggle. Widget IIFE is idempotent, so we don't
+// track per-tab "is loaded". chrome:// pages throw and silently no-op.
+chrome.action.onClicked.addListener(async (tab) => {
+  if (!tab?.id) return;
+  try {
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ["content/in-page-widget.js"],
+    });
+    chrome.tabs.sendMessage(tab.id, { type: "toggle-widget" }).catch(() => {});
+  } catch {}
+});
+
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId !== "ask-agent") return;
   if (!tab?.id) return;

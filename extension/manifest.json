@@ -126,12 +126,18 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["shared/tokens.css", "shared/icons.svg"],
+      "resources": [
+        "shared/tokens.css",
+        "shared/icons.svg",
+        "shared/*.js",
+        "popup/popup.html",
+        "popup/popup.css",
+        "popup/popup.js"
+      ],
       "matches": ["<all_urls>"]
     }
   ],
   "action": {
-    "default_popup": "popup/popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",

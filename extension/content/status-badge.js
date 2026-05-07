@@ -126,7 +126,7 @@ const SHADOW_CSS = `
 
   .circle .label {
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 13px;
     letter-spacing: 0.04em;
     text-transform: lowercase;
     color: var(--ink-mute);
@@ -159,7 +159,7 @@ const SHADOW_CSS = `
     border-radius: var(--r-lg);
     box-shadow: var(--shadow-lg);
     color: var(--ink);
-    font-size: 13px;
+    font-size: 15px;
   }
 
   .card-top {
@@ -174,7 +174,7 @@ const SHADOW_CSS = `
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 500;
     letter-spacing: -0.01em;
   }
@@ -221,14 +221,14 @@ const SHADOW_CSS = `
   }
 
   .headline {
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 500;
     letter-spacing: -0.01em;
   }
 
   .ats {
     font-family: var(--font-mono);
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -237,14 +237,14 @@ const SHADOW_CSS = `
 
   .subline {
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 13px;
     color: var(--ink-mute);
     word-break: break-all;
   }
 
   .summary {
     font-family: var(--font-mono);
-    font-size: 13px;
+    font-size: 15px;
     color: var(--ink);
   }
 
@@ -258,7 +258,7 @@ const SHADOW_CSS = `
   }
 
   .error-body {
-    font-size: 12px;
+    font-size: 14px;
     background: var(--tint-accent);
     border: 1px solid var(--accent);
     padding: 8px 12px;
@@ -271,7 +271,7 @@ const SHADOW_CSS = `
     align-items: center;
     gap: 8px;
     font-family: var(--font-mono);
-    font-size: 13px;
+    font-size: 15px;
   }
 
   .filling-row .spin {
@@ -299,7 +299,7 @@ const SHADOW_CSS = `
     background: var(--ink);
     color: var(--on-ink);
     font-family: inherit;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 500;
     cursor: pointer;
     display: inline-flex;
@@ -340,7 +340,7 @@ const SHADOW_CSS = `
     border: none;
     color: var(--ink-mute);
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 13px;
     letter-spacing: 0.04em;
     cursor: pointer;
     padding: 4px 6px;

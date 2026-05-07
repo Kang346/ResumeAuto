@@ -39,7 +39,10 @@ function rerender() {
 
 async function checkServer() {
   try {
-    const d = await api.getStatus();
+    const d = await Promise.race([
+      api.getStatus(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 3000)),
+    ]);
     ctx.serverOnline = !!d.ok;
   } catch {
     ctx.serverOnline = false;
@@ -141,8 +144,28 @@ async function refreshHosts() {
 async function init() {
   toast = mountToast($("#toast"));
 
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  ctx.tab = tab || null;
+  // Report content height to the in-page widget parent so it can size the
+  // panel. Set up before any await so it works even if init stalls. Observe
+  // body, not documentElement: in an iframe documentElement.scrollHeight is
+  // floored by viewport height and won't shrink when content collapses.
+  const sendHeightToParent = () => {
+    try {
+      const h = document.body.scrollHeight;
+      window.parent.postMessage({ type: "autoresume-widget-height", h }, "*");
+    } catch {}
+  };
+  new ResizeObserver(sendHeightToParent).observe(document.body);
+  sendHeightToParent();
+
+  // Render with default ctx so state-host isn't blank if a later await stalls.
+  rerender();
+
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    ctx.tab = tab || null;
+  } catch {
+    ctx.tab = null;
+  }
 
   await checkServer();
   if (ctx.serverOnline) {
@@ -150,7 +173,11 @@ async function init() {
   }
 
   if (ctx.tab?.id != null) {
-    ctx.adapterFrame = await detectAdapterFrame(ctx.tab.id);
+    try {
+      ctx.adapterFrame = await detectAdapterFrame(ctx.tab.id);
+    } catch {
+      ctx.adapterFrame = null;
+    }
   }
 
   rerender();

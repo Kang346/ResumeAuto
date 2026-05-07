@@ -8,25 +8,39 @@ import { el, urlMatchesTab } from "./state-templates.js";
 // ── Primary fill action ────────────────────────────────────
 export async function triggerFill(ctx, { rerender, toast }) {
   if (!ctx.tab) return;
+  if (ctx.filling) return;
   ctx.filling = true;
   rerender();
   toast("");
 
   try {
     if (ctx.adapterFrame) {
-      await chrome.scripting.executeScript({
+      // Don't await executeScript: when popup.js runs in the in-page widget
+      // iframe, the adapter's DOM mutations can hang the iframe's promise
+      // forever. Fire-and-forget, then poll /state for the detector's POST.
+      const beforeTs = ctx.lastState?.timestamp || null;
+      const tabUrl = ctx.tab.url;
+
+      chrome.scripting.executeScript({
         target: { tabId: ctx.tab.id, frameIds: [ctx.adapterFrame.frameId] },
         func: async () => {
           if (typeof window.AutoFill?.triggerFill === "function") {
             await window.AutoFill.triggerFill();
-            return { ok: true };
           }
-          return { ok: false, error: "triggerFill missing" };
         },
-      });
-      // Detector posts /state after fill; brief delay then re-render.
-      await new Promise((r) => setTimeout(r, 400));
-      try { ctx.lastState = await api.getState(); } catch { ctx.lastState = null; }
+      }).catch(() => {});
+
+      const newState = await pollForNewFillState(beforeTs, tabUrl);
+      if (newState) {
+        ctx.lastState = newState;
+      } else {
+        ctx.lastState = {
+          url: tabUrl,
+          ats: ctx.adapterFrame?.name || "form",
+          status: "error",
+          error: "fill timed out — page didn't respond",
+        };
+      }
     } else {
       // No adapter for this site: load generic stack and run it.
       await chrome.scripting.executeScript({
@@ -82,6 +96,26 @@ function pickBestFrameResult(frameResults) {
   return results.reduce((a, b) =>
     (b.error || "").length > (a.error || "").length ? b : a
   );
+}
+
+// Poll /state until detector posts a new fill result; null on ~30s timeout.
+async function pollForNewFillState(beforeTimestamp, currentUrl, maxAttempts = 60, intervalMs = 500) {
+  for (let i = 0; i < maxAttempts; i++) {
+    await new Promise((r) => setTimeout(r, intervalMs));
+    try {
+      const state = await api.getState();
+      if (
+        state && state.url && state.timestamp &&
+        urlMatchesTab(state.url, currentUrl) &&
+        state.timestamp !== beforeTimestamp
+      ) {
+        return state;
+      }
+    } catch {
+      // transient server hiccup — keep polling
+    }
+  }
+  return null;
 }
 
 // ── Save current tab to queue ──────────────────────────────

@@ -33,11 +33,11 @@
   --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Cascadia Code",
                "Roboto Mono", Menlo, Consolas, monospace;
 
-  --text-xs: 11px;
-  --text-sm: 12px;
-  --text-md: 13px;
-  --text-lg: 15px;
-  --text-xl: 18px;
+  --text-xs: 13px;
+  --text-sm: 14px;
+  --text-md: 15px;
+  --text-lg: 17px;
+  --text-xl: 20px;
 
   --weight-regular: 400;
   --weight-medium: 500;
