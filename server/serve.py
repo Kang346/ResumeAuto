@@ -15,7 +15,7 @@ import sys
 import time
 import argparse
 from datetime import datetime, timezone
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from threading import Lock
 from urllib.parse import urlparse, unquote
@@ -342,7 +342,7 @@ def main():
     parser.add_argument("--port", type=int, default=8765)
     args = parser.parse_args()
 
-    server = HTTPServer(("127.0.0.1", args.port), Handler)
+    server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
     print(f"AutoResume server running on http://127.0.0.1:{args.port}")
     print(f"  Base dir: {BASE_DIR}")
     print(f"  PDFs:     {OUTPUT_DIR}")

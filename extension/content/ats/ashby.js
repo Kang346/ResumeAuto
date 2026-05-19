@@ -91,7 +91,7 @@ window.__atsModule = {
         context.includes("linkedin") ||
         (context.includes("linked") && context.includes("in") && context.includes("profile"))
       ) {
-        if (input && (inputType === "text" || inputType === "url" || !input.type) && personalInfo.linkedin) {
+        if (input && (inputType === "text" || inputType === "url" || !input.type || input.tagName === "TEXTAREA") && personalInfo.linkedin) {
           this.reactSet(input, personalInfo.linkedin);
           filled.push("linkedin");
         }
@@ -99,7 +99,7 @@ window.__atsModule = {
       }
 
       if (context.includes("github")) {
-        if (input && (inputType === "text" || inputType === "url" || !input.type) && personalInfo.github) {
+        if (input && (inputType === "text" || inputType === "url" || !input.type || input.tagName === "TEXTAREA") && personalInfo.github) {
           this.reactSet(input, personalInfo.github);
           filled.push("github");
         }
@@ -112,7 +112,7 @@ window.__atsModule = {
         context.includes("personal site") ||
         (context.includes("website") && !context.includes("company"))
       ) {
-        if (input && (inputType === "text" || inputType === "url" || !input.type) && personalInfo.website) {
+        if (input && (inputType === "text" || inputType === "url" || !input.type || input.tagName === "TEXTAREA") && personalInfo.website) {
           this.reactSet(input, personalInfo.website);
           filled.push("website");
         }
@@ -120,7 +120,7 @@ window.__atsModule = {
       }
 
       if (context.includes("twitter") || context.includes("x profile") || context.includes("x handle")) {
-        if (input && (inputType === "text" || inputType === "url" || !input.type) && personalInfo.twitter) {
+        if (input && (inputType === "text" || inputType === "url" || !input.type || input.tagName === "TEXTAREA") && personalInfo.twitter) {
           this.reactSet(input, personalInfo.twitter);
           filled.push("twitter");
         }
@@ -151,8 +151,13 @@ window.__atsModule = {
       if (
         context.includes("sponsorship") ||
         context.includes("require employment") ||
+        context.includes("immigration case") ||
+        context.includes("h1-b") || context.includes("h1b") ||
         (context.includes("sponsor") && context.includes("visa")) ||
-        (context.includes("now or in the future") && context.includes("work"))
+        (context.includes("sponsor") && context.includes("immigration")) ||
+        (context.includes("sponsor") && context.includes("employ")) ||
+        (context.includes("now or in the future") && context.includes("work")) ||
+        (context.includes("now or in the future") && context.includes("employ"))
       ) {
         if (input && inputType === "checkbox") {
           this.setCheckbox(input, true);
@@ -173,6 +178,12 @@ window.__atsModule = {
             filled.push("sponsorship_yes");
           }
           // else: question label or "No" option — leave alone.
+        } else {
+          // Button-group form: Ashby renders Yes/No as <button>, not radio.
+          const grp = this.findYesNoButtons(label);
+          if (grp?.yesBtn && this.clickToggleButton(grp.yesBtn)) {
+            filled.push("sponsorship_yes");
+          }
         }
         continue;
       }
@@ -381,5 +392,32 @@ window.__atsModule = {
   // React-safe radio setter
   setRadio(el) {
     if (!el.checked) el.click();
+  },
+
+  // Walk up from a label to find a container holding both Yes and No <button>
+  // controls. Ashby renders some single-choice questions as a button group
+  // instead of a real radio set; the label-for-input chain misses those.
+  findYesNoButtons(label) {
+    let node = label.parentElement;
+    for (let i = 0; i < 6 && node; i++, node = node.parentElement) {
+      const buttons = node.querySelectorAll("button");
+      if (buttons.length < 2) continue;
+      const yesBtn = [...buttons].find(b => /^yes$/i.test(b.textContent.trim()));
+      const noBtn  = [...buttons].find(b => /^no$/i.test(b.textContent.trim()));
+      if (yesBtn && noBtn) return { yesBtn, noBtn };
+    }
+    return null;
+  },
+
+  // Click a toggle-style <button>, but skip if it appears already pressed —
+  // otherwise a Re-fill would invert a correct answer.
+  clickToggleButton(btn) {
+    if (!btn) return false;
+    const pressed =
+      btn.getAttribute("aria-pressed") === "true" ||
+      btn.getAttribute("aria-checked") === "true";
+    if (pressed) return true;
+    btn.click();
+    return true;
   },
 };
