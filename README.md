@@ -8,13 +8,33 @@
 
 本项目由三个阶段组成：
 
-1. **收集** —— Claude Code 在 LinkedIn / Greenhouse / Indeed等平台上 上搜符合你画像的新岗位，把合格的写进 Notion 数据库。
-2. **定制** —— 对每个岗位，Claude Code 读 JD、从你的项目库里挑最合适的 2 个项目、按 JD 关键词重写 bullet，编译出一份 ATS 友好的单页 PDF。
+1. **收集** —— Claude Code 在 LinkedIn / Greenhouse / Indeed等平台上 上搜符合你画像的新岗位，把合格的写进 Notion 数据库。(理想应该是这样，不过目前让claude自己收集还是太慢了，建议自己收集岗位然后用save功能保存，之后让claude cowork模式把job queue里的岗位过一遍，写进notion。目前正在研究怎么更好的收集方案)
+2. **定制** —— 对每个岗位，Claude Code 从notion里读 JD、从你的项目库里挑最合适的 2 个项目、按 JD 关键词重写 bullet，编译出一份 ATS 友好的单页 PDF。
 3. **投递** —— Chrome 插件自动填 Workday / Greenhouse / Lever / Ashby 表单，上传定制好的 PDF；可以使用插件一件填写，如果遇到开放新问题，可以右键保存问题，之后让claude cowork处理问题队列，然后用extension auto fill回去。也可以尝试用claude cowork模式用extension填写，不过目前并不完善，很慢而且费token
 
 ## 样例
 
 打开 [examples/demo_resume.pdf](examples/demo_resume.pdf) —— 这是用仓库里自带的样例 JD（[examples/sample_jd.md](examples/sample_jd.md)）跑出来的成品 PDF。你不用装 LaTeX 也不用装 Claude Code，先看下输出长啥样。
+
+## 插件界面
+
+主界面长这样，点 Chrome 工具栏上的插件图标会在当前页面右上角弹出来。
+
+![AutoResume 插件主界面](docs/images/autoresume_annotated.png)
+
+最常用的是中间那个 **Fill this page**，一键填当前申请页上能识别到的字段。右上角的 **Save** 是当你在 LinkedIn 或公司 careers 页看到一个想投的岗位时，点一下扔进 job queue，之后让 LLM 统一过一遍并写进 Notion。再右边的小图标可以切到侧边栏模式，长时间挂着投递的时候比较顺手。下面 More options 展开后，可以手动从下拉框里选一份 PDF 注入到当前页的简历上传框；或者点 **Fill drafted answers**，把之前你右键 "Ask Agent to draft an answer" 攒下的开放题答案一次性回填到对应字段下面。
+
+如果本地 server 没启动，插件会进入 offline 状态，长这样：
+
+![Server Offline 状态](docs/images/autoresume_offline_annotated.png)
+
+顶上原本绿色的 `online` 会变成 `offline`，主区域弹一个面板告诉你 server 是干什么用的（读表单字段），并把启动命令 `python server/serve.py` 直接显出来，点右边小图标可以复制。终端里跑起来之后，按一下 **Retry connection**，几秒钟就回到正常状态。一个副作用是 PDF 下拉框这时候会一直显示 "loading" —— 因为 PDF 列表本来就是从本地 server 拿的，server 一恢复就好。
+
+侧边栏模式是另一种用法，适合长时间挂着批量处理：
+
+![侧边栏模式](docs/images/autoresume_sidebar_annotated.png)
+
+切过去之后，**Job Queue** 会列出你之前用 Save 攒下来的所有岗位 URL。可以直接告诉 Claude Cowork "把队列里的全过一遍"，它会自己开 tab、读 JD、写进 Notion。
 
 ## 环境要求
 
@@ -22,9 +42,9 @@
 - 一个 LaTeX 发行版 —— Windows 推荐 [MiKTeX](https://miktex.org/)，Linux/macOS 用 [TeX Live](https://www.tug.org/texlive/)
 - Chrome 浏览器（阶段 3 的插件要用）
 - [Claude Code](https://docs.claude.com/en/docs/claude-code) 已安装并能登录
-- *（可选）* Notion + 集成 token，如果你想用 Notion 当岗位池
+- *（可选但推荐）* Notion + 集成 token，如果你想用 Notion 当岗位池
 
-> 关于 Claude Code 的订阅：推荐使用claude max（约 $100/月），自动定制简历这个量级用完全够。不过如果你自己收集岗位，只用它来tailor简历的话，那20刀的也够用。
+> 关于 Claude Code 的订阅：推荐使用claude max（约 $100/月），自动定制简历这个量级用完全够。不过如果投递量不大，20刀的应该也够用（？
 
 ## 快速上手
 
@@ -131,11 +151,7 @@ Notion 的字段定义、状态选项、JD 页面格式都在 `prompts/job_colle
 
 - LaTeX 装起来不轻量，MiKTeX 和 TeX Live 都是几个 GB 起步。目前正在寻找更轻量的简历生成方案（比如纯 HTML/CSS）。
 - Chrome 插件目前对 Workday、Greenhouse、Lever、Ashby 有专门适配，其他 ATS 会走通用兜底逻辑（不一定每个字段都填得上）。
-- 阶段 3 永远在最后那个 Submit 之前停下来 —— 你自己点 Submit 之前先过一遍内容。
+- 由于项目都由个人维护，难免会有各种 bug 和不完善的地方。如果你发现有什么可以改进的，欢迎提 issue 或 PR。
 
 ## Note
 当然，如果你嫌配置太麻烦，你可以试一下把信息给claude，让他自己全都配置好这个项目，我相信目前的claude code有这个能力
-
-## License
-
-MIT。见 [LICENSE](LICENSE)（TODO —— 发布前补上）。

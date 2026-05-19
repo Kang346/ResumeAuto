@@ -8,13 +8,33 @@ Job-search + resume tailoring + auto-apply pipeline. Driven by [Claude Code & Co
 
 Three phases:
 
-1. **Collect** — Claude Code searches LinkedIn / Greenhouse / Indeed and similar platforms for fresh postings that match your profile, and writes the qualifying ones to a Notion database.
-2. **Tailor** — For each job, Claude Code reads the JD, picks the best 2 projects from your library, rewrites bullets to match JD keywords, and compiles a 1-page ATS-friendly PDF.
+1. **Collect** — Claude Code searches LinkedIn / Greenhouse / Indeed and similar platforms for fresh postings that match your profile, and writes the qualifying ones to a Notion database. (That's the ideal. In practice, having Claude do the discovery itself is still too slow right now, so the recommended flow is: collect jobs manually, hit Save to drop them into the queue, then let Claude Cowork chew through the queue and write everything into Notion. Better discovery approaches are still being explored.)
+2. **Tailor** — For each job, Claude Code reads the JD from Notion, picks the best 2 projects from your library, rewrites bullets to match JD keywords, and compiles a 1-page ATS-friendly PDF.
 3. **Apply** — A Chrome extension auto-fills Workday / Greenhouse / Lever / Ashby forms and uploads the tailored PDF. For open-ended questions, right-click to queue the question; later have Claude Cowork drain the queue and the extension fills the answers back into the page. You can also try driving the extension via Claude Cowork directly, but that path is currently slow and token-heavy.
 
 ## Sample
 
 Open [examples/demo_resume.pdf](examples/demo_resume.pdf) — a pre-compiled 1-page PDF tailored against the bundled sample JD ([examples/sample_jd.md](examples/sample_jd.md)). You don't need LaTeX or Claude Code to look at it; it's just here so you can see the kind of output this tool produces before installing anything.
+
+## Extension UI
+
+The main panel looks like this — clicking the AutoResume icon in the Chrome toolbar pops it up in the top-right corner of the current page.
+
+![AutoResume main panel](docs/images/autoresume_annotated.png)
+
+The button you'll hit most is **Fill this page** in the middle, which fires off a one-shot fill for every field on the current application page that the extension can identify. The **Save** button at the top right is for when you're on a LinkedIn listing or a company careers page and spot a job you want to apply to: click it once, and the URL gets dropped into the job queue so you can have the LLM batch-process everything later and push it into Notion. The icon right next to Save switches to side-panel mode (more on that below), which is handier when you're working through applications for a long stretch. Expanding **More options** lets you manually pick a PDF from the dropdown and inject it into the current page's resume upload field; or hit **Fill drafted answers** to splash the open-ended answers you queued earlier (via the right-click "Ask Agent to draft an answer" context menu) back into their corresponding form fields.
+
+If the local server isn't running, the extension drops into offline state, which looks like this:
+
+![Server Offline state](docs/images/autoresume_offline_annotated.png)
+
+The green `online` chip at the top flips to `offline`, and the main area surfaces a panel explaining what the server is for (it reads form fields) and the start command `python server/serve.py` shown directly — the icon next to it copies the command. Once you've got the server running in a terminal, hit **Retry connection** and you'll be back online in a couple seconds. One side effect worth knowing: while offline, the PDF dropdown shows "loading" forever — that list comes from the local server, so it recovers the moment the server does.
+
+Side-panel mode is the other way to use the extension, and it's better suited for long batch sessions:
+
+![Side panel mode](docs/images/autoresume_sidebar_annotated.png)
+
+Once you switch over, **Job Queue** lists every URL you've ever queued via Save. The intended use is to just tell Claude Cowork "go through everything in the queue" — it'll open tabs, read the JDs, and write them into Notion on its own.
 
 ## Requirements
 
@@ -22,9 +42,9 @@ Open [examples/demo_resume.pdf](examples/demo_resume.pdf) — a pre-compiled 1-p
 - A LaTeX distribution — [MiKTeX](https://miktex.org/) on Windows, [TeX Live](https://www.tug.org/texlive/) on Linux/macOS
 - Chrome (for the Phase 3 extension)
 - [Claude Code](https://docs.claude.com/en/docs/claude-code) installed and signed in
-- *(Optional)* Notion + an integration token, if you want to use Notion as the job source
+- *(Optional but recommended)* Notion + an integration token, if you want to use Notion as the job source
 
-> On the Claude Code subscription: Claude Max (~$100/mo) is the recommended tier — at the volume of automated tailoring this tool drives, it's more than enough headroom. If you collect jobs manually and only use Claude to tailor resumes, the $20 Pro tier also works.
+> On the Claude Code subscription: Claude Max (~$100/mo) is the recommended tier — at the volume of automated tailoring this tool drives, it's more than enough headroom. If you're not applying at high volume, the $20 Pro tier should also work (probably?).
 
 ## Quickstart
 
@@ -136,12 +156,8 @@ If you don't want Notion, the easiest no-database alternative is a `user_data/jo
 
 - LaTeX is a heavy install. MiKTeX and TeX Live are multi-GB. We're exploring lighter resume-generation paths (e.g. pure HTML/CSS).
 - The Chrome extension has dedicated adapters for Workday, Greenhouse, Lever, and Ashby. Other ATSes fall back to a best-effort generic fill.
-- Phase 3 always stops before final submit; you click Submit yourself after reviewing.
+- This is a solo-maintained project, so there will be bugs and rough edges. If you find something worth improving, issues and PRs are very welcome.
 
 ## Note
 
 If the configuration feels like too much, you can just hand the relevant info to Claude and let it set the project up for you end-to-end. Modern Claude Code is more than capable of handling this.
-
-## License
-
-MIT. See [LICENSE](LICENSE) (TODO — add file before publishing).
