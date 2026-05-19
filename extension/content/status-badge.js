@@ -29,11 +29,11 @@ const SHADOW_TOKENS = `
     --ink:      oklch(22% 0.025 250);
     --ink-mute: oklch(40% 0.020 250);
     --ink-faint:oklch(55% 0.015 240);
-    --accent:   oklch(50% 0.18 25);
+    --accent:   oklch(45% 0.10 200);
     --success:  oklch(50% 0.13 145);
     --warning:  oklch(70% 0.14 75);
     --tint-success: oklch(94% 0.04 145);
-    --tint-accent:  oklch(95% 0.04 25);
+    --tint-accent:  oklch(95% 0.03 200);
     --on-ink:   oklch(98% 0.008 80);
     --shadow-md: 0 4px 12px oklch(22% 0.025 250 / 0.08);
     --shadow-lg: 0 12px 28px oklch(22% 0.025 250 / 0.12);
@@ -56,11 +56,11 @@ const SHADOW_TOKENS = `
       --ink:      oklch(94% 0.012 80);
       --ink-mute: oklch(75% 0.012 80);
       --ink-faint:oklch(62% 0.012 80);
-      --accent:   oklch(68% 0.16 25);
+      --accent:   oklch(65% 0.10 200);
       --success:  oklch(72% 0.14 145);
       --warning:  oklch(78% 0.13 75);
       --tint-success: oklch(28% 0.04 145);
-      --tint-accent:  oklch(28% 0.05 25);
+      --tint-accent:  oklch(28% 0.04 200);
       --on-ink:   oklch(15% 0.015 250);
       --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.5);
       --shadow-lg: 0 12px 28px oklch(0% 0 0 / 0.6);
@@ -659,7 +659,7 @@ AutoFill.Badge = {
             chrome.runtime.sendMessage(
               {
                 type: "fetch",
-                url: "http://localhost:8765/save-job",
+                url: "http://127.0.0.1:8765/save-job",
                 method: "POST",
                 body: JSON.stringify({
                   url: window.location.href,

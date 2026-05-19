@@ -173,7 +173,7 @@ async function refreshForActiveTab() {
 
 // ── Misc handlers ──────────────────────────────────────────
 function onServerChipClick() {
-  if (ctx.serverOnline) toast(`server: localhost:8765`);
+  if (ctx.serverOnline) toast(`server: 127.0.0.1:8765`);
   else onRetryServer();
 }
 

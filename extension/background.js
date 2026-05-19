@@ -1,4 +1,4 @@
-const SERVER_URL = "http://localhost:8765";
+const SERVER_URL = "http://127.0.0.1:8765";
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === "fetch") {
@@ -252,7 +252,7 @@ chrome.runtime.onMessageExternal.addListener((msg, sender, sendResponse) => {
       }
 
       if (action === "state") {
-        const r = await fetch("http://localhost:8765/state");
+        const r = await fetch("http://127.0.0.1:8765/state");
         const data = await r.json();
         sendResponse({ ok: true, state: data });
         return;

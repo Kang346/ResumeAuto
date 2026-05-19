@@ -6,14 +6,14 @@ This document is for any agent with browser control (Claude Code with Chrome MCP
 
 ## Prerequisites
 
-1. **Local server running.** `python server/serve.py` (binds `localhost:8765`).
+1. **Local server running.** `python server/serve.py` (binds `127.0.0.1:8765`).
 2. **Chrome extension loaded.** `chrome://extensions` → Developer mode → Load unpacked → select [extension/](../extension/).
 3. **`location.line1` filled** in [user_data/personal_info.json](../user_data/personal_info.json) with the user's street address (replace any placeholder). Many ATS forms reject submissions without it.
 4. Both server and extension must be running before starting auto-apply.
 
 ## What you need per job
 
-1. [user_data/personal_info.json](../user_data/personal_info.json) — all personal data; also exposed at `http://localhost:8765/personal-info`.
+1. [user_data/personal_info.json](../user_data/personal_info.json) — all personal data; also exposed at `http://127.0.0.1:8765/personal-info`.
 2. **Agent Note** on the job-source entry — contains the PDF filename, e.g. `📄 PDF Ready | Projects: x, y | PDF: Company_xxx.pdf`.
 3. **Tailored PDF** in `output/` — produced by Phase 2.
 4. **Chrome extension** loaded — auto-fills known ATS fields and injects PDFs.
@@ -30,7 +30,7 @@ You handle: navigation, unfilled fields, open-ended questions, final review.
 
 ## Step-by-step workflow (per job with `📄` in Agent Note)
 
-1. **Check tab limit.** `curl http://localhost:8765/tabs` — if `pending_tabs >= 10`, pause and ask the user to clear some.
+1. **Check tab limit.** `curl http://127.0.0.1:8765/tabs` — if `pending_tabs >= 10`, pause and ask the user to clear some.
 
 2. **Extract the PDF filename** from `Agent Note` (the substring after `PDF: `).
 
@@ -46,10 +46,10 @@ You handle: navigation, unfilled fields, open-ended questions, final review.
 
 5. **Wait 3–5 seconds** for the extension to auto-detect and fill.
 
-6. **Read the status badge** (bottom-right) to see what was filled / unfilled. Or `curl http://localhost:8765/state` for structured data.
+6. **Read the status badge** (bottom-right) to see what was filled / unfilled. Or `curl http://127.0.0.1:8765/state` for structured data.
 
 7. **Fill remaining unfilled fields yourself.**
-   - Source: `user_data/personal_info.json` (or `http://localhost:8765/personal-info`).
+   - Source: `user_data/personal_info.json` (or `http://127.0.0.1:8765/personal-info`).
    - Yes/no defaults, work auth, salary: see [form_rules.md](./form_rules.md).
    - Open-ended questions ("Why this company?"): follow [form_rules.md](./form_rules.md) §3. Search the web for company info before writing.
    - Unknown fields: make a reasonable choice, or leave blank and flag as `⚠️ UNFILLED: <field>`.

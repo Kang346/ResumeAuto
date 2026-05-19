@@ -230,7 +230,7 @@ When the user invokes this prompt, do the following in order:
    - Run the full Per-job validation checklist (all rules apply: date ≤ 7 days, sponsorship, education, YoE, etc.)
    - If it passes → write to the database using the same schema (page-body summary included)
    - If it fails → record `Saved → SKIP: <reason>` in the round summary
-   - After processing each entry (pass or fail), POST its URL to `http://localhost:8765/clear-pending-jobs` (body: `{"urls": ["<url>"]}`) so it's removed from the queue
+   - After processing each entry (pass or fail), POST its URL to `http://127.0.0.1:8765/clear-pending-jobs` (body: `{"urls": ["<url>"]}`) so it's removed from the queue
    - If `user_data/pending_jobs.json` is empty or the file doesn't exist, skip this step silently
    - **Note:** Saved-queue entries also flow through validation rule #9 (dedup) — compute the dedup key for each one before writing.
 0.5. **Build the dedup index.** Query the Notion database for every existing page and read **both** `Dedup Key` and `Job Signature` into the same working set held in your context for this round. Reading both is what catches the cross-source case (existing entry stored an ATS job ID, new candidate only has the company+title+location triple) — see the schema notes above for why. Pages with both fields empty (legacy entries that haven't been backfilled) should be tracked separately by `(Company Name, Job Title, Base)` so step 3 can still warn on probable duplicates against them. Reuse this set for every candidate in step 3 and the saved queue in step 0 — do not re-query Notion per candidate.

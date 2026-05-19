@@ -124,7 +124,7 @@ Notion 的字段定义、状态选项、JD 页面格式都在 `prompts/job_colle
 ## 隐私
 
 - `user_data/`、`output/`、`work/`、`logs/` 都已 gitignore。提交前还是建议过一下 `git status`。
-- Chrome 插件通过 `localhost:8765` 读 ATS 表单字段和 `user_data/personal_info.json`，除此之外不发起任何外网请求。
+- Chrome 插件通过 `127.0.0.1:8765` 读 ATS 表单字段和 `user_data/personal_info.json`，除此之外不发起任何外网请求。
 - Claude Code 在编排过程中会读你的 JD、项目库、个人信息。
 
 ## 注意事项

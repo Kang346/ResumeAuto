@@ -765,7 +765,7 @@ AutoFill.matchLabel = function (labelText, patterns) {
 AutoFill.serverFetch = function (path) {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage(
-      { type: "fetch", url: `http://localhost:8765${path}` },
+      { type: "fetch", url: `http://127.0.0.1:8765${path}` },
       (response) => {
         if (chrome.runtime.lastError) {
           reject(new Error(chrome.runtime.lastError.message));
@@ -783,7 +783,7 @@ AutoFill.serverFetch = function (path) {
 AutoFill.fetchPdfBlob = function (filename) {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage(
-      { type: "fetch-blob", url: `http://localhost:8765/pdf/${filename}` },
+      { type: "fetch-blob", url: `http://127.0.0.1:8765/pdf/${filename}` },
       (response) => {
         if (chrome.runtime.lastError) {
           reject(new Error(chrome.runtime.lastError.message));

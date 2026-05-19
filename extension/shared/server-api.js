@@ -2,7 +2,7 @@
 // place so popup and panel share the same contract; whoever changes the
 // server only updates this file.
 
-export const SERVER = "http://localhost:8765";
+export const SERVER = "http://127.0.0.1:8765";
 
 async function getJson(path) {
   const r = await fetch(`${SERVER}${path}`);

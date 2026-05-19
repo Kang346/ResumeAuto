@@ -41,7 +41,7 @@ async function checkServer() {
   try {
     const d = await Promise.race([
       api.getStatus(),
-      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 3000)),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 6000)),
     ]);
     ctx.serverOnline = !!d.ok;
   } catch {
@@ -86,7 +86,7 @@ async function loadLastState() {
 }
 
 function onServerChipClick() {
-  if (ctx.serverOnline) toast(`server: localhost:8765`);
+  if (ctx.serverOnline) toast(`server: 127.0.0.1:8765`);
   else onRetryServer();
 }
 

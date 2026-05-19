@@ -129,7 +129,7 @@ If you don't want Notion, the easiest no-database alternative is a `user_data/jo
 ## Privacy
 
 - Your `user_data/`, `output/`, `work/`, and `logs/` folders are gitignored. Audit `git status` before committing.
-- The Chrome extension reads ATS form fields and `user_data/personal_info.json` over `localhost:8765`. It makes no outbound calls beyond that.
+- The Chrome extension reads ATS form fields and `user_data/personal_info.json` over `127.0.0.1:8765`. It makes no outbound calls beyond that.
 - Claude Code reads your JDs, project library, and personal info as part of the orchestration loop.
 
 ## Caveats

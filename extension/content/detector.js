@@ -120,7 +120,7 @@
           chrome.runtime.sendMessage(
             {
               type: "fetch",
-              url: "http://localhost:8765/state",
+              url: "http://127.0.0.1:8765/state",
               method: "POST",
               body: JSON.stringify({
                 url: window.location.href,

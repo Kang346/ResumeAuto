@@ -8,7 +8,7 @@
 // background.js injects right before this file.
 
 (function () {
-  const SERVER = "http://localhost:8765";
+  const SERVER = "http://127.0.0.1:8765";
   const PROMPT_KEYWORDS = [
     "why", "tell us", "describe", "cover letter",
     "passionate", "motivated", "interest", "excite",
